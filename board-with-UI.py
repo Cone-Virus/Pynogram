@@ -79,6 +79,13 @@ class Board:
                     return False
         return True # All boxes are correct
 
+
+    # Show solution - set all boxes in grid to match solution
+    def showSolution(self):
+        for i in range(self.size):
+            for j in range(self.size):
+                self.grid[i][j] = self.solution[i][j]
+
     # Clears the grid (set all boxes to 0)
     def clearGrid(self):
         for i in range(self.size):
@@ -204,11 +211,11 @@ class Board:
         for i in range(self.size): # each row
             for j in range(self.size): # each column
                 if self.grid[i][j] == 0: # blank
-                    pygame.draw.rect(surface, (255,255,255), pygame.Rect(205 + (i * 35), 255 + (j * 35), 30, 30))
+                    pygame.draw.rect(surface, (255,255,255), pygame.Rect(205 + (j * 35), 255 + (i * 35), 30, 30))
                 elif self.grid[i][j] == 1: # filled
-                    pygame.draw.rect(surface, (45,45,45), pygame.Rect(205 + (i * 35), 255 + (j * 35), 30, 30))
+                    pygame.draw.rect(surface, (45,45,45), pygame.Rect(205 + (j * 35), 255 + (i * 35), 30, 30))
                 else: # self.grid[i][j] == 2, X
-                    pygame.draw.rect(surface, (90,45,90), pygame.Rect(205 + (i * 35), 255 + (j * 35), 30, 30))
+                    pygame.draw.rect(surface, (90,45,90), pygame.Rect(205 + (j * 35), 255 + (i * 35), 30, 30))
 
         pygame.display.update()
 
@@ -228,8 +235,7 @@ class Board:
     # Handles changes in box states when clicked on
     def clickBox(self,x,y,selection):
         if x <= self.boardsize + 205 and y <= self.boardsize + 255 and x >= 200 and y >= 250:
-            row,col = self.convert_space(x,y) # Get the row and column of the box to toggle
-
+            col,row = self.convert_space(x,y) # Get the row and column of the box to toggle
             if selection == 1: # left click - toggle fill
                 self.toggleFill(row,col)
             elif selection == 3: # right click - toggle X
@@ -251,13 +257,42 @@ def load_image(imageName):
         raise SystemExit(message)
     return image, image.get_rect()
 
-# Button for clearing the board,
+# Button for clearing the board
 class ClearButton(pygame.sprite.Sprite):
     # Constructor
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image("clear.bmp")
         self.rect.topleft = 725, 60 # Position on screen
+
+# Button for checking the puzzle
+class CheckPuzzleButton(pygame.sprite.Sprite):
+    # Constructor
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image("check.bmp")
+        self.rect.topleft = 350, 700 # Position on screen
+
+    # Determine if user completed the puzzle, and display appropriate message
+    # YES: congratulation message, NO: give options to keep trying or show solution
+    # If user has completed puzzle or chooses to show solution, return value indicating they
+    # can no longer edit the puzzle/grid
+    # FIXME - needs popups and buttons, not console text
+    def checkPuzzle(self, board):
+        isCorrect = board.checkSolution() # Check if user's solution is correct
+        # FIXME - need to add the popups
+        if isCorrect:
+            print("You solved it!")
+            canEditGrid = False
+        else:
+            print("Not correct...")
+            showSol = input("Show solution? ")
+            if showSol == "Y":
+                board.showSolution()
+                canEditGrid = False
+            else:
+                canEditGrid = True
+        return canEditGrid
 
 def main():
 
@@ -266,9 +301,18 @@ def main():
     surface = pygame.display.set_mode((900,900))
     surface.fill((255,255,255))
 
-    # Set up clear button (sprite)
+    # Determines whether user can edit grid (including clear grid)
+    # Check solution is also disabled; since user can't modify grid, result of check won't change
+    # This is false when:
+    # (1) User has checked their solution and is correct (completed the puzzle)
+    # (2) User has checked their solution and is wrong, but chooses to see solution
+    # (3) User is not on the board (ex. popup is covering it, different menu)
+    canEditGrid = True
+
+    # Set up clear button and check button (sprites)
     clearButton = ClearButton()
-    sprites = pygame.sprite.RenderPlain((clearButton))
+    checkPuzzleButton = CheckPuzzleButton()
+    sprites = pygame.sprite.RenderPlain((clearButton,checkPuzzleButton))
 
     # Create a 10x10 board with solution from file "test.txt" (in assets folder)
     board = Board()
@@ -282,7 +326,7 @@ def main():
 
         # Display all the boxes, with color dependent on their current state
         board.displayBoxes(surface)
-        # Display the clear board button (sprite)
+        # Display the buttons (sprites)
         sprites.draw(surface)
 
         for e in pygame.event.get():
@@ -291,13 +335,17 @@ def main():
             if e.type == pygame.MOUSEBUTTONDOWN:
                 x,y = pygame.mouse.get_pos()
 
-                if e.button == 1 and clearButton.rect.collidepoint(x, y): # left click on clear button
+                if e.button == 1 and clearButton.rect.collidepoint(x, y) and canEditGrid: # left click on clear button
                     board.clearGrid() # clear grid
 
-                if e.button == 1 or e.button == 3:
+                if e.button == 1 and checkPuzzleButton.rect.collidepoint(x, y) and canEditGrid: # left click on check button
+                    # Check if user completed puzzle successfully
+                    # If they did or they choose to see solution, prevent them from editing the grid
+                    canEditGrid = checkPuzzleButton.checkPuzzle(board)
+
+                if (e.button == 1 or e.button == 3) and canEditGrid: # click on box in grid
                     selection = e.button
                     board.clickBox(x,y,selection)
-
 
 
 
