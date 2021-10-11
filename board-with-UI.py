@@ -239,12 +239,36 @@ class Board:
 # End of code for interacting with display/user
 #-------------------------------------------------
 
+# Load an image from a file; imageName looks like "name.ext"
+def load_image(imageName):
+    # Need image name to include path to load it into game
+    loadName = os.path.join(assets_dir, imageName)
+    try:
+        # Actually load the image here
+        image = pygame.image.load(loadName).convert()
+    except pygame.error as message:
+        print("Unable to load the image ", name)
+        raise SystemExit(message)
+    return image, image.get_rect()
+
+# Button for clearing the board,
+class ClearButton(pygame.sprite.Sprite):
+    # Constructor
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image("clear.bmp")
+        self.rect.topleft = 725, 60 # Position on screen
+
 def main():
 
     clock = pygame.time.Clock()
     screen = pygame.init()
     surface = pygame.display.set_mode((900,900))
     surface.fill((255,255,255))
+
+    # Set up clear button (sprite)
+    clearButton = ClearButton()
+    sprites = pygame.sprite.RenderPlain((clearButton))
 
     # Create a 10x10 board with solution from file "test.txt" (in assets folder)
     board = Board()
@@ -258,13 +282,19 @@ def main():
 
         # Display all the boxes, with color dependent on their current state
         board.displayBoxes(surface)
+        # Display the clear board button (sprite)
+        sprites.draw(surface)
 
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 pygame.quit()
             if e.type == pygame.MOUSEBUTTONDOWN:
+                x,y = pygame.mouse.get_pos()
+
+                if e.button == 1 and clearButton.rect.collidepoint(x, y): # left click on clear button
+                    board.clearGrid() # clear grid
+
                 if e.button == 1 or e.button == 3:
-                    x,y = pygame.mouse.get_pos()
                     selection = e.button
                     board.clickBox(x,y,selection)
 
