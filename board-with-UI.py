@@ -189,9 +189,16 @@ class Board:
             count = 0 # For numbers side to side
             x = reversed(x)
             for y in x:
-                font = pygame.font.Font('freesansbold.ttf', 30)
-                text = font.render(str(y), True, (0,0,0))
-                surface.blit(text,(175 - (count * 35) ,255 + (posX * 35)))
+                # Render numbers >= 10 in smaller font and fix spacing
+                if y >= 10:
+                    font = pygame.font.Font('freesansbold.ttf', 26)
+                    text = font.render(str(y), True, (0,0,0))
+                    surface.blit(text,(165 - (count * 35) ,260 + (posX * 35)))
+                else:
+                    font = pygame.font.Font('freesansbold.ttf', 30)
+                    text = font.render(str(y), True, (0,0,0))
+                    surface.blit(text,(175 - (count * 35) ,255 + (posX * 35)))
+
                 count = count + 1
             posX = posX + 1
         posX = 0 # Top Side
@@ -199,9 +206,17 @@ class Board:
             count = 0 # For numbers top to bottom
             x = reversed(x)
             for y in x:
-                font = pygame.font.Font('freesansbold.ttf', 30)
-                text = font.render(str(y), True, (0,0,0))
-                surface.blit(text,(210 + (posX * 35),(220  - (count * 35))))
+
+                # Render numbers >= 10 in smaller font and fix spacing
+                if y >= 10:
+                    font = pygame.font.Font('freesansbold.ttf', 26)
+                    text = font.render(str(y), True, (0,0,0))
+                    surface.blit(text,(205 + (posX * 35),(225  - (count * 35))))
+                else:
+                    font = pygame.font.Font('freesansbold.ttf', 30)
+                    text = font.render(str(y), True, (0,0,0))
+                    surface.blit(text,(210 + (posX * 35),(220  - (count * 35))))
+
                 count = count + 1
             posX = posX + 1
 
@@ -316,7 +331,7 @@ def main():
 
     # Create a 10x10 board with solution from file "test.txt" (in assets folder)
     board = Board()
-    board.setUpPuzzle(5, "test4.txt")
+    board.setUpPuzzle(10, "test5.txt")
 
     # Display the board lines and numbers
     board.displayBoard(surface)
