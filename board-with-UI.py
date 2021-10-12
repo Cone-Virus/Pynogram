@@ -225,14 +225,30 @@ class Board:
     def displayBoxes(self, surface):
         for i in range(self.size): # each row
             for j in range(self.size): # each column
-                if self.grid[i][j] == 0: # blank
-                    pygame.draw.rect(surface, (255,255,255), pygame.Rect(205 + (j * 35), 255 + (i * 35), 30, 30))
-                elif self.grid[i][j] == 1: # filled
-                    pygame.draw.rect(surface, (45,45,45), pygame.Rect(205 + (j * 35), 255 + (i * 35), 30, 30))
-                else: # self.grid[i][j] == 2, X
-                    pygame.draw.rect(surface, (90,45,90), pygame.Rect(205 + (j * 35), 255 + (i * 35), 30, 30))
 
-        pygame.display.update()
+                # Define upper left corner of grid square, used for positioning
+                upperLeftX = 205 + (j * 35)
+                upperLeftY = 255 + (i * 35)
+
+                if self.grid[i][j] == 0: # blank
+                    pygame.draw.rect(surface, (255,255,255), pygame.Rect(upperLeftX, upperLeftY, 30, 30))
+
+                elif self.grid[i][j] == 1: # filled
+                    # White background
+                    pygame.draw.rect(surface, (255,255,255), pygame.Rect(upperLeftX, upperLeftY, 30, 30))
+                    # Black square for the fill
+                    pygame.draw.rect(surface, (0,0,0), pygame.Rect(upperLeftX + 3, upperLeftY + 3, 24, 24))
+
+                else: # self.grid[i][j] == 2, X
+                    # White background
+                    pygame.draw.rect(surface, (255,255,255), pygame.Rect(upperLeftX, upperLeftY, 30, 30))
+                    # Two red lines to make the X:
+                    pygame.draw.line(surface, (255,0,0), (upperLeftX + 5, upperLeftY + 3), (upperLeftX + 23, upperLeftY + 26), 6)
+                    pygame.draw.line(surface, (255,0,0), (upperLeftX + 23, upperLeftY + 3), (upperLeftX + 5, upperLeftY + 26), 6)
+
+
+
+        pygame.display.update() # update display with the changes
 
     def convert_space(self,x,y): # Function responsible for converting X,Y mouse coordinates into array numbers
         new_x = math.floor((x - 205) / 35)
