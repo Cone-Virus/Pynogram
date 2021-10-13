@@ -304,6 +304,27 @@ class CheckPuzzleButton(pygame.sprite.Sprite):
         self.image, self.rect = load_image("check.bmp")
         self.rect.topleft = 350, 700 # Position on screen
 
+    # Determine if user completed the puzzle, and display appropriate message
+    # YES: congratulation message, NO: give options to keep trying or show solution
+    # If user has completed puzzle or chooses to show solution, return value indicating they
+    # can no longer edit the puzzle/grid
+    # FIXME - needs popups and buttons, not console text
+    def checkPuzzle(self, board):
+        isCorrect = board.checkSolution() # Check if user's solution is correct
+        # FIXME - need to add the popups
+        if isCorrect:
+            print("You solved it!")
+            canEditGrid = False
+        else:
+            print("Not correct...")
+            showSol = input("Show solution? ")
+            if showSol == "Y":
+                board.showSolution()
+                canEditGrid = False
+            else:
+                canEditGrid = True
+        return canEditGrid
+
 # Button for muting/unmuting the music
 class MuteMusicButton(pygame.sprite.Sprite):
     # Keeps track of whether music is on or not
@@ -328,27 +349,6 @@ class MuteMusicButton(pygame.sprite.Sprite):
             pygame.mixer.music.unpause()
             self.image, self.rect = load_image("music-on.bmp")
             self.rect.topleft = 790, 800 # Position on screen
-
-    # Determine if user completed the puzzle, and display appropriate message
-    # YES: congratulation message, NO: give options to keep trying or show solution
-    # If user has completed puzzle or chooses to show solution, return value indicating they
-    # can no longer edit the puzzle/grid
-    # FIXME - needs popups and buttons, not console text
-    def checkPuzzle(self, board):
-        isCorrect = board.checkSolution() # Check if user's solution is correct
-        # FIXME - need to add the popups
-        if isCorrect:
-            print("You solved it!")
-            canEditGrid = False
-        else:
-            print("Not correct...")
-            showSol = input("Show solution? ")
-            if showSol == "Y":
-                board.showSolution()
-                canEditGrid = False
-            else:
-                canEditGrid = True
-        return canEditGrid
 
 def main():
 
@@ -396,7 +396,7 @@ def main():
             if e.type == pygame.MOUSEBUTTONDOWN:
                 x,y = pygame.mouse.get_pos()
 
-                if e.button == 1 and muteMusicButton.rect.collidepoint(x, y) and canEditGrid: # left click on mute music button
+                if e.button == 1 and muteMusicButton.rect.collidepoint(x, y): # left click on mute music button
                     muteMusicButton.toggleMusic() # mute/unmute music
 
                 if e.button == 1 and clearButton.rect.collidepoint(x, y) and canEditGrid: # left click on clear button
