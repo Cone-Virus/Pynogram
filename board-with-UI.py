@@ -304,6 +304,31 @@ class CheckPuzzleButton(pygame.sprite.Sprite):
         self.image, self.rect = load_image("check.bmp")
         self.rect.topleft = 350, 700 # Position on screen
 
+# Button for muting/unmuting the music
+class MuteMusicButton(pygame.sprite.Sprite):
+    # Keeps track of whether music is on or not
+    musicEnabled = True
+
+    # Constructor
+    def __init__(self):
+        self.musicEnabled = True
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image("music-on.bmp")
+        self.rect.topleft = 790, 800 # Position on screen
+
+    # Change sprite and toggle music based on current state
+    def toggleMusic(self):
+        if self.musicEnabled: # music on -> mute music
+            self.musicEnabled = False
+            pygame.mixer.music.pause()
+            self.image, self.rect = load_image("music-off.bmp")
+            self.rect.topleft = 790, 800 # Position on screen
+        else: # music off -> turn on music
+            self.musicEnabled = True
+            pygame.mixer.music.unpause()
+            self.image, self.rect = load_image("music-on.bmp")
+            self.rect.topleft = 790, 800 # Position on screen
+
     # Determine if user completed the puzzle, and display appropriate message
     # YES: congratulation message, NO: give options to keep trying or show solution
     # If user has completed puzzle or chooses to show solution, return value indicating they
@@ -343,7 +368,8 @@ def main():
     # Set up clear button and check button (sprites)
     clearButton = ClearButton()
     checkPuzzleButton = CheckPuzzleButton()
-    sprites = pygame.sprite.RenderPlain((clearButton,checkPuzzleButton))
+    muteMusicButton = MuteMusicButton()
+    sprites = pygame.sprite.RenderPlain((clearButton,checkPuzzleButton, muteMusicButton))
 
     # Create a 10x10 board with solution from file "test.txt" (in assets folder)
     board = Board()
@@ -351,6 +377,10 @@ def main():
 
     # Display the board lines and numbers
     board.displayBoard(surface)
+
+    # Load song
+    pygame.mixer.music.load(os.path.join(assets_dir, "Arpent.mp3"))
+    pygame.mixer.music.play(-1) # loop indefinitely
 
     while True:
         clock.tick(60) # 60 fps
@@ -365,6 +395,9 @@ def main():
                 pygame.quit()
             if e.type == pygame.MOUSEBUTTONDOWN:
                 x,y = pygame.mouse.get_pos()
+
+                if e.button == 1 and muteMusicButton.rect.collidepoint(x, y) and canEditGrid: # left click on mute music button
+                    muteMusicButton.toggleMusic() # mute/unmute music
 
                 if e.button == 1 and clearButton.rect.collidepoint(x, y) and canEditGrid: # left click on clear button
                     board.clearGrid() # clear grid
