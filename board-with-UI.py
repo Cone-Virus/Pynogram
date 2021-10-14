@@ -350,12 +350,60 @@ class MuteMusicButton(pygame.sprite.Sprite):
             self.image, self.rect = load_image("music-on.bmp")
             self.rect.topleft = 790, 800 # Position on screen
 
+class Timer():
+    timerRunning = True # counts up when true, stops when False
+    refTime = 0 # time when timer started
+    currTime = 0 # time relative to when timer started; what to display on the screen
+    timerText = "" # text to show timer on screen
+
+    # Used to display the time on screen
+    numSeconds = 0
+    numMinutes = 0
+
+    def __init__(self):
+        self.timerRunning = True
+        self.refTime = pygame.time.get_ticks()
+        self.currTime = pygame.time.get_ticks() - self.refTime # get the relative time
+        self.numSeconds = 0
+        self.numMinutes = 0
+        self.timerText = ""
+
+    def isRunning(self): # true if timer running, false otherwise (getter)
+        return self.timerRunning
+
+    def setRunning(self, status): # set timerRunning to status (setter)
+        self.timerRunning = status
+
+    def resetTimer(self): # start counting from 0
+        self.refTime = pygame.time.get_ticks() # updates the reference time (new starting point)
+
+    def displayTime(self, surface): # display the time on the screen
+        # Determine amount of time passed since refTime was set up
+        self.currTime = pygame.time.get_ticks() - self.refTime
+        self.numSeconds = self.currTime // 1000 # ms -> s
+        self.numMinutes = self.numSeconds // 60 # s -> min
+        self.numSeconds = self.numSeconds - (self.numMinutes * 60) # remove the time accounted for in numMinutes
+
+        # Black box for border around timer
+        pygame.draw.rect(surface, (0,0,0), pygame.Rect(395, 45, 110, 55))
+        # White background for timer
+        pygame.draw.rect(surface, (255,255,255), pygame.Rect(400, 50, 100, 45))
+
+        # Display timer text (minutes and seconds)
+        self.timerText = "{0:02}:{1:02}".format(self.numMinutes, self.numSeconds)
+        font = pygame.font.Font('freesansbold.ttf', 30)
+        text = font.render(self.timerText, True, (0,0,0))
+        surface.blit(text, [408, 60])
+
+
 def main():
 
     clock = pygame.time.Clock()
     screen = pygame.init()
     surface = pygame.display.set_mode((900,900))
     surface.fill((255,255,255))
+
+    timer = Timer()
 
     # Determines whether user can edit grid (including clear grid)
     # Check solution is also disabled; since user can't modify grid, result of check won't change
@@ -385,6 +433,9 @@ def main():
     while True:
         clock.tick(60) # 60 fps
 
+        # Display timer if running
+        if timer.isRunning():
+            timer.displayTime(surface)
         # Display all the boxes, with color dependent on their current state
         board.displayBoxes(surface)
         # Display the buttons (sprites)
@@ -406,6 +457,7 @@ def main():
                     # Check if user completed puzzle successfully
                     # If they did or they choose to see solution, prevent them from editing the grid
                     canEditGrid = checkPuzzleButton.checkPuzzle(board)
+                    timer.setRunning(canEditGrid) # stop the timer if solved
 
                 if (e.button == 1 or e.button == 3) and canEditGrid: # click on box in grid
                     selection = e.button
