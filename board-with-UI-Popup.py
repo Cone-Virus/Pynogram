@@ -6,8 +6,6 @@ import math
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 assets_dir = os.path.join(main_dir, "assets")
 
-surface = pygame.display.set_mode((900,900))
-
 class Board:
 
     # Array fill: 0 is blank, 1 is filled, 2 is 'X'
@@ -289,7 +287,7 @@ class button():
     def __init__(self,x,y,image):
         self.image, self.rect = load_image(image)
         self.rect.topleft = (x,y)
-    def draw(self):
+    def draw(self,surface):
         #draw button on screen
         surface.blit(self.image, (self.rect.x, self.rect.y))
 
@@ -355,11 +353,58 @@ class MuteMusicButton(pygame.sprite.Sprite):
             self.image, self.rect = load_image("music-on.bmp")
             self.rect.topleft = 790, 800 # Position on screen
 
+class Timer():
+    timerRunning = True # counts up when true, stops when False
+    refTime = 0 # time when timer started
+    currTime = 0 # time relative to when timer started; what to display on the screen
+    timerText = "" # text to show timer on screen
+
+    # Used to display the time on screen
+    numSeconds = 0
+    numMinutes = 0
+
+    def __init__(self):
+        self.timerRunning = True
+        self.refTime = pygame.time.get_ticks()
+        self.currTime = pygame.time.get_ticks() - self.refTime # get the relative time
+        self.numSeconds = 0
+        self.numMinutes = 0
+        self.timerText = ""
+
+    def isRunning(self): # true if timer running, false otherwise (getter)
+        return self.timerRunning
+
+    def setRunning(self, status): # set timerRunning to status (setter)
+        self.timerRunning = status
+
+    def resetTimer(self): # start counting from 0
+        self.refTime = pygame.time.get_ticks() # updates the reference time (new starting point)
+
+    def displayTime(self, surface): # display the time on the screen
+        # Determine amount of time passed since refTime was set up
+        self.currTime = pygame.time.get_ticks() - self.refTime
+        self.numSeconds = self.currTime // 1000 # ms -> s
+        self.numMinutes = self.numSeconds // 60 # s -> min
+        self.numSeconds = self.numSeconds - (self.numMinutes * 60) # remove the time accounted for in numMinutes
+
+        # Black box for border around timer
+        pygame.draw.rect(surface, (0,0,0), pygame.Rect(395, 45, 110, 55))
+        # White background for timer
+        pygame.draw.rect(surface, (255,255,255), pygame.Rect(400, 50, 100, 45))
+
+        # Display timer text (minutes and seconds)
+        self.timerText = "{0:02}:{1:02}".format(self.numMinutes, self.numSeconds)
+        font = pygame.font.Font('freesansbold.ttf', 30)
+        text = font.render(self.timerText, True, (0,0,0))
+        surface.blit(text, [408, 60])
+
 
 def main():
 
     clock = pygame.time.Clock()
     screen = pygame.init()
+    surface = pygame.display.set_mode((900,900))
+    pygame.display.set_caption("Pynogram")
     surface.fill((255,255,255))
 
     # Determines whether user can edit grid (including clear grid)
@@ -412,12 +457,12 @@ def main():
             board.displayBoxes(surface) # boxes in the grid
         elif gameState == 1:
             if solCorrect:
-                puzzleComplete.draw()
-                pcMainMenu.draw()
+                puzzleComplete.draw(surface)
+                pcMainMenu.draw(surface)
             else:
-                puzzleIncorrect.draw()
-                tryAgain.draw()
-                showSolution.draw()
+                puzzleIncorrect.draw(surface)
+                tryAgain.draw(surface)
+                showSolution.draw(surface)
 
         pygame.display.update() # Update the display only one per loop (otherwise get flickering)
 
