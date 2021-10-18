@@ -274,36 +274,6 @@ class Board:
             elif selection == 3: # right click - toggle X
                 self.toggleX(row,col)
 
-#Popup buttons
-
-puzzleComplete_img = pygame.image.load("assets/puzzleComplete.png").convert_alpha()
-pcMainMenu_img = pygame.image.load("assets/mainmenu.png").convert_alpha()
-puzzleIncorrect_img = pygame.image.load("assets/incorrect.png").convert_alpha()
-tryAgain_img = pygame.image.load("assets/tryAgain.png").convert_alpha()
-showSolution_img = pygame.image.load("assets/showSolution.png").convert_alpha()
-
-class button():
-    def __init__(self,x,y,image):
-        self.image = image
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x,y)
-    def draw(self):
-        #draw button on screen
-        surface.blit(self.image, (self.rect.x, self.rect.y))
-
-puzzleComplete = button(50,115, puzzleComplete_img)
-pcMainMenu = button(325,495, pcMainMenu_img)
-puzzleIncorrect = button(50,115, puzzleIncorrect_img)
-tryAgain = button(325,420, tryAgain_img)
-showSolution = button(325, 510, showSolution_img)
-
-
-
-
-
-#-------------------------------------------------
-# End of code for interacting with display/user
-#-------------------------------------------------
 
 # Load an image from a file; imageName looks like "name.ext"
 def load_image(imageName):
@@ -311,11 +281,25 @@ def load_image(imageName):
     loadName = os.path.join(assets_dir, imageName)
     try:
         # Actually load the image here
-        image = pygame.image.load(loadName).convert()
+        image = pygame.image.load(loadName).convert_alpha()
     except pygame.error as message:
         print("Unable to load the image ", imageName)
         raise SystemExit(message)
     return image, image.get_rect()
+
+
+#Popup buttons
+class button():
+    def __init__(self,x,y,image):
+        self.image, self.rect = load_image(image)
+        self.rect.topleft = (x,y)
+    def draw(self):
+        #draw button on screen
+        surface.blit(self.image, (self.rect.x, self.rect.y))
+
+#-------------------------------------------------
+# End of code for interacting with display/user
+#-------------------------------------------------
 
 # Button for clearing the board
 class ClearButton(pygame.sprite.Sprite):
@@ -342,24 +326,11 @@ class CheckPuzzleButton(pygame.sprite.Sprite):
         isCorrect = board.checkSolution() # Check if user's solution is correct
         # FIXME - need to add the popups
         if isCorrect:
-            print("You solved it!")
             solCorrect = True
             canEditGrid = False
         else:
-
             solCorrect = False
-            print("Not correct...")
-            #showSol = input("Show solution? ")
-            showSol = "N"
-            if showSol == "Y":
-                board.showSolution()
-                surface.fill((255, 255, 255))
-                board.displayBoard(surface)
-                canEditGrid = False
-            else:
-                #surface.fill((255, 255, 255))
-                #board.displayBoard(surface)
-                canEditGrid = True
+            canEditGrid = True
 
         return canEditGrid, solCorrect
 
@@ -385,6 +356,13 @@ def main():
     clearButton = ClearButton()
     checkPuzzleButton = CheckPuzzleButton()
     sprites = pygame.sprite.RenderPlain((clearButton,checkPuzzleButton))
+
+    #Popup buttons
+    puzzleComplete = button(50,115, "puzzleComplete.png")
+    pcMainMenu = button(325,495, "mainmenu.png")
+    puzzleIncorrect = button(50,115, "incorrect.png")
+    tryAgain = button(325,420, "tryAgain.png")
+    showSolution = button(325, 510, "showSolution.png")
 
     # Create a 10x10 board with solution from file "test.txt" (in assets folder)
     board = Board()
@@ -432,13 +410,11 @@ def main():
                         showSolution.draw()
                         pygame.display.flip()
                         if e.button == 1 and tryAgain.rect.collidepoint(x, y):
-                            print("The try again button was pressed")
                             surface.fill((255, 255, 255))
                             board.displayBoard(surface)
                             gameState = 0
 
                         if e.button == 1 and showSolution.rect.collidepoint(x, y):
-                            print("The solve button was pressed")
                             canEditGrid = False
                             surface.fill((255, 255, 255))
                             board.displayBoard(surface)
@@ -452,8 +428,9 @@ def main():
                             puzzleComplete.draw()
                             pcMainMenu.draw()
                             pygame.display.flip()
-                        if e.button == 1 and pcMainMenu.rect.collidepoint(x, y) and canEditGrid == False:
-                            print("The main menu button was pressed, had it functionality something would have happened")
+
+                        # Functionality to return to main menu - not currently enabled
+                        #if e.button == 1 and pcMainMenu.rect.collidepoint(x, y) and canEditGrid == False:
 
 
 # Run in command prompt (otherwise closes instantly)
