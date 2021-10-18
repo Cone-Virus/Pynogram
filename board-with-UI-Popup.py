@@ -180,7 +180,6 @@ class Board:
         for x in range(self.size):
             for y in range(self.size):
                 self.button(x,y,surface)
-        pygame.display.flip()
 
     def button(self,x,y,surface):
         pygame.draw.rect(surface, self.color, pygame.Rect(205 + (x * 35), 255 + (y * 35), 30, 30))
@@ -248,9 +247,6 @@ class Board:
                     pygame.draw.line(surface, (255,0,0), (upperLeftX + 5, upperLeftY + 3), (upperLeftX + 23, upperLeftY + 26), 6)
                     pygame.draw.line(surface, (255,0,0), (upperLeftX + 23, upperLeftY + 3), (upperLeftX + 5, upperLeftY + 26), 6)
 
-
-
-        pygame.display.update() # update display with the changes
 
     def convert_space(self,x,y): # Function responsible for converting X,Y mouse coordinates into array numbers
         new_x = math.floor((x - 205) / 35)
@@ -334,6 +330,30 @@ class CheckPuzzleButton(pygame.sprite.Sprite):
 
         return canEditGrid, solCorrect
 
+# Button for muting/unmuting the music
+class MuteMusicButton(pygame.sprite.Sprite):
+    # Keeps track of whether music is on or not
+    musicEnabled = True
+
+    # Constructor
+    def __init__(self):
+        self.musicEnabled = True
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image("music-on.bmp")
+        self.rect.topleft = 790, 800 # Position on screen
+
+    # Change sprite and toggle music based on current state
+    def toggleMusic(self):
+        if self.musicEnabled: # music on -> mute music
+            self.musicEnabled = False
+            pygame.mixer.music.pause()
+            self.image, self.rect = load_image("music-off.bmp")
+            self.rect.topleft = 790, 800 # Position on screen
+        else: # music off -> turn on music
+            self.musicEnabled = True
+            pygame.mixer.music.unpause()
+            self.image, self.rect = load_image("music-on.bmp")
+            self.rect.topleft = 790, 800 # Position on screen
 
 
 def main():
@@ -352,10 +372,11 @@ def main():
     solCorrect = False
     #Used when puzzle incorrect, prevents game from continuing until user selects to try again or give up
 
-    # Set up clear button and check button (sprites)
+    # Set up clear button, check button, mute music button (sprites)
     clearButton = ClearButton()
     checkPuzzleButton = CheckPuzzleButton()
-    sprites = pygame.sprite.RenderPlain((clearButton,checkPuzzleButton))
+    muteMusicButton = MuteMusicButton()
+    sprites = pygame.sprite.RenderPlain((clearButton,checkPuzzleButton, muteMusicButton))
 
     #Popup buttons
     puzzleComplete = button(50,115, "puzzleComplete.png")
@@ -366,27 +387,48 @@ def main():
 
     # Create a 10x10 board with solution from file "test.txt" (in assets folder)
     board = Board()
-    board.setUpPuzzle(10, "test5.txt")
+    board.setUpPuzzle(10, "test6.txt")
 
     # Display the board lines and numbers
     board.displayBoard(surface)
+
+    # Load song
+    pygame.mixer.music.load(os.path.join(assets_dir, "Arpent.mp3"))
+    pygame.mixer.music.play(-1) # loop indefinitely
 
     #Used to prevent interaction with puzzle while popup is active
     gameState = 0
 
     while True:
         clock.tick(60) # 60 fps
+
+        # All the code to display things on the screen goes here
+        surface.fill((255,255,255)) # white background
+        sprites.draw(surface) # clear, check, mute buttons
+
+        #FIXME - comments from Pedro on gameState
         if gameState == 0:
-            # Display all the boxes, with color dependent on their current state
-            board.displayBoxes(surface)
-            # Display the buttons (sprites)
-            sprites.draw(surface)
+            board.displayBoard(surface) # grid and numbers
+            board.displayBoxes(surface) # boxes in the grid
+        elif gameState == 1:
+            if solCorrect:
+                puzzleComplete.draw()
+                pcMainMenu.draw()
+            else:
+                puzzleIncorrect.draw()
+                tryAgain.draw()
+                showSolution.draw()
+
+        pygame.display.update() # Update the display only one per loop (otherwise get flickering)
 
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 pygame.quit()
             if e.type == pygame.MOUSEBUTTONDOWN:
                 x,y = pygame.mouse.get_pos()
+
+                if e.button == 1 and muteMusicButton.rect.collidepoint(x, y): # left click on mute music button
+                    muteMusicButton.toggleMusic() # mute/unmute music
 
                 if gameState == 0:
                     if e.button == 1 and clearButton.rect.collidepoint(x, y) and canEditGrid: # left click on clear button
@@ -405,29 +447,19 @@ def main():
 
                 if gameState == 1:
                     if solCorrect == False:
-                        puzzleIncorrect.draw()
-                        tryAgain.draw()
-                        showSolution.draw()
-                        pygame.display.flip()
                         if e.button == 1 and tryAgain.rect.collidepoint(x, y):
-                            surface.fill((255, 255, 255))
-                            board.displayBoard(surface)
+                            #!!surface.fill((255, 255, 255))
+                            #!!board.displayBoard(surface)
                             gameState = 0
 
                         if e.button == 1 and showSolution.rect.collidepoint(x, y):
                             canEditGrid = False
-                            surface.fill((255, 255, 255))
-                            board.displayBoard(surface)
                             board.showSolution()
-                            #canEditGrid = False
                             gameState = 0
 
                     if solCorrect == True:
                         if solCorrect == True:
                             canEditGrid = False
-                            puzzleComplete.draw()
-                            pcMainMenu.draw()
-                            pygame.display.flip()
 
                         # Functionality to return to main menu - not currently enabled
                         #if e.button == 1 and pcMainMenu.rect.collidepoint(x, y) and canEditGrid == False:
