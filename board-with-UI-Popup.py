@@ -381,8 +381,10 @@ class Timer():
         self.refTime = pygame.time.get_ticks() # updates the reference time (new starting point)
 
     def displayTime(self, surface): # display the time on the screen
-        # Determine amount of time passed since refTime was set up
-        self.currTime = pygame.time.get_ticks() - self.refTime
+        # Only update time if timer is running
+        if self.timerRunning:
+            # Determine amount of time passed since refTime was set up
+            self.currTime = pygame.time.get_ticks() - self.refTime
         self.numSeconds = self.currTime // 1000 # ms -> s
         self.numMinutes = self.numSeconds // 60 # s -> min
         self.numSeconds = self.numSeconds - (self.numMinutes * 60) # remove the time accounted for in numMinutes
@@ -406,6 +408,8 @@ def main():
     surface = pygame.display.set_mode((900,900))
     pygame.display.set_caption("Pynogram")
     surface.fill((255,255,255))
+
+    timer = Timer()
 
     # Determines whether user can edit grid (including clear grid)
     # Check solution is also disabled; since user can't modify grid, result of check won't change
@@ -450,6 +454,7 @@ def main():
         # All the code to display things on the screen goes here
         surface.fill((255,255,255)) # white background
         sprites.draw(surface) # clear, check, mute buttons
+        timer.displayTime(surface) # show timer
 
         #FIXME - comments from Pedro on gameState
         if gameState == 0:
@@ -478,6 +483,7 @@ def main():
                 if gameState == 0:
                     if e.button == 1 and clearButton.rect.collidepoint(x, y) and canEditGrid: # left click on clear button
                         board.clearGrid() # clear grid
+                        timer.resetTimer()
 
                     if e.button == 1 and checkPuzzleButton.rect.collidepoint(x, y) and canEditGrid: # left click on check button
                         # Check if user completed puzzle successfully
@@ -498,13 +504,15 @@ def main():
                             gameState = 0
 
                         if e.button == 1 and showSolution.rect.collidepoint(x, y):
+                            timer.setRunning(False) # stop the timer
                             canEditGrid = False
                             board.showSolution()
                             gameState = 0
 
                     if solCorrect == True:
-                        if solCorrect == True:
-                            canEditGrid = False
+                        timer.setRunning(False) # stop the timer
+                        print("STOPPED")
+                        canEditGrid = False
 
                         # Functionality to return to main menu - not currently enabled
                         #if e.button == 1 and pcMainMenu.rect.collidepoint(x, y) and canEditGrid == False:
