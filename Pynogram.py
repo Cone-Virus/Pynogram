@@ -190,11 +190,11 @@ class Board:
             for y in x:
                 # Render numbers >= 10 in smaller font and fix spacing
                 if y >= 10:
-                    font = pygame.font.Font('freesansbold.ttf', 26)
+                    font = pygame.font.Font(None, 26)
                     text = font.render(str(y), True, (0,0,0))
                     surface.blit(text,(165 - (count * 35) ,260 + (posX * 35)))
                 else:
-                    font = pygame.font.Font('freesansbold.ttf', 30)
+                    font = pygame.font.Font(None, 30)
                     text = font.render(str(y), True, (0,0,0))
                     surface.blit(text,(175 - (count * 35) ,255 + (posX * 35)))
 
@@ -208,11 +208,11 @@ class Board:
 
                 # Render numbers >= 10 in smaller font and fix spacing
                 if y >= 10:
-                    font = pygame.font.Font('freesansbold.ttf', 26)
+                    font = pygame.font.Font(None, 26)
                     text = font.render(str(y), True, (0,0,0))
                     surface.blit(text,(205 + (posX * 35),(225  - (count * 35))))
                 else:
-                    font = pygame.font.Font('freesansbold.ttf', 30)
+                    font = pygame.font.Font(None, 30)
                     text = font.render(str(y), True, (0,0,0))
                     surface.blit(text,(210 + (posX * 35),(220  - (count * 35))))
 
@@ -396,7 +396,7 @@ class Timer():
 
         # Display timer text (minutes and seconds)
         self.timerText = "{0:02}:{1:02}".format(self.numMinutes, self.numSeconds)
-        font = pygame.font.Font('freesansbold.ttf', 30)
+        font = pygame.font.Font(None, 30)
         text = font.render(self.timerText, True, (0,0,0))
         surface.blit(text, [408, 60])
 
