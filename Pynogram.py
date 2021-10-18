@@ -457,6 +457,11 @@ def main():
         timer.displayTime(surface) # show timer
 
         #FIXME - comments from Pedro on gameState
+        #gameState controls what is being rendered on screen, as well as what buttons are clickable
+        #The default is 0, and allows access to the pynogram puzzle, clear button, and check solution button
+        #gameState = 1 stops rendering the pynogram puzzle, and the buttons become unclickable.
+        #State 1 renders a popup based on whether solCorrect is true or false
+        #When solCorrect is false, user can click "Try Again" or "Show Solution" buttons, when solCorrect is true there is no functionality atm
         if gameState == 0:
             board.displayBoard(surface) # grid and numbers
             board.displayBoxes(surface) # boxes in the grid
