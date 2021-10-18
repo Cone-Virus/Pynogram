@@ -178,7 +178,6 @@ class Board:
         for x in range(self.size):
             for y in range(self.size):
                 self.button(x,y,surface)
-        pygame.display.flip()
 
     def button(self,x,y,surface):
         pygame.draw.rect(surface, self.color, pygame.Rect(205 + (x * 35), 255 + (y * 35), 30, 30))
@@ -247,9 +246,6 @@ class Board:
                     pygame.draw.line(surface, (255,0,0), (upperLeftX + 23, upperLeftY + 3), (upperLeftX + 5, upperLeftY + 26), 6)
 
 
-
-        pygame.display.update() # update display with the changes
-
     def convert_space(self,x,y): # Function responsible for converting X,Y mouse coordinates into array numbers
         new_x = math.floor((x - 205) / 35)
         new_y = math.floor((y - 255) / 35)
@@ -272,9 +268,6 @@ class Board:
             elif selection == 3: # right click - toggle X
                 self.toggleX(row,col)
 
-#-------------------------------------------------
-# End of code for interacting with display/user
-#-------------------------------------------------
 
 # Load an image from a file; imageName looks like "name.ext"
 def load_image(imageName):
@@ -282,11 +275,25 @@ def load_image(imageName):
     loadName = os.path.join(assets_dir, imageName)
     try:
         # Actually load the image here
-        image = pygame.image.load(loadName).convert()
+        image = pygame.image.load(loadName).convert_alpha()
     except pygame.error as message:
-        print("Unable to load the image ", name)
+        print("Unable to load the image ", imageName)
         raise SystemExit(message)
     return image, image.get_rect()
+
+
+#Popup buttons
+class button():
+    def __init__(self,x,y,image):
+        self.image, self.rect = load_image(image)
+        self.rect.topleft = (x,y)
+    def draw(self,surface):
+        #draw button on screen
+        surface.blit(self.image, (self.rect.x, self.rect.y))
+
+#-------------------------------------------------
+# End of code for interacting with display/user
+#-------------------------------------------------
 
 # Button for clearing the board
 class ClearButton(pygame.sprite.Sprite):
@@ -313,24 +320,96 @@ class CheckPuzzleButton(pygame.sprite.Sprite):
         isCorrect = board.checkSolution() # Check if user's solution is correct
         # FIXME - need to add the popups
         if isCorrect:
-            print("You solved it!")
+            solCorrect = True
             canEditGrid = False
         else:
-            print("Not correct...")
-            showSol = input("Show solution? ")
-            if showSol == "Y":
-                board.showSolution()
-                canEditGrid = False
-            else:
-                canEditGrid = True
-        return canEditGrid
+            solCorrect = False
+            canEditGrid = True
+
+        return canEditGrid, solCorrect
+
+# Button for muting/unmuting the music
+class MuteMusicButton(pygame.sprite.Sprite):
+    # Keeps track of whether music is on or not
+    musicEnabled = True
+
+    # Constructor
+    def __init__(self):
+        self.musicEnabled = True
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image("music-on.bmp")
+        self.rect.topleft = 790, 800 # Position on screen
+
+    # Change sprite and toggle music based on current state
+    def toggleMusic(self):
+        if self.musicEnabled: # music on -> mute music
+            self.musicEnabled = False
+            pygame.mixer.music.pause()
+            self.image, self.rect = load_image("music-off.bmp")
+            self.rect.topleft = 790, 800 # Position on screen
+        else: # music off -> turn on music
+            self.musicEnabled = True
+            pygame.mixer.music.unpause()
+            self.image, self.rect = load_image("music-on.bmp")
+            self.rect.topleft = 790, 800 # Position on screen
+
+class Timer():
+    timerRunning = True # counts up when true, stops when False
+    refTime = 0 # time when timer started
+    currTime = 0 # time relative to when timer started; what to display on the screen
+    timerText = "" # text to show timer on screen
+
+    # Used to display the time on screen
+    numSeconds = 0
+    numMinutes = 0
+
+    def __init__(self):
+        self.timerRunning = True
+        self.refTime = pygame.time.get_ticks()
+        self.currTime = pygame.time.get_ticks() - self.refTime # get the relative time
+        self.numSeconds = 0
+        self.numMinutes = 0
+        self.timerText = ""
+
+    def isRunning(self): # true if timer running, false otherwise (getter)
+        return self.timerRunning
+
+    def setRunning(self, status): # set timerRunning to status (setter)
+        self.timerRunning = status
+
+    def resetTimer(self): # start counting from 0
+        self.refTime = pygame.time.get_ticks() # updates the reference time (new starting point)
+
+    def displayTime(self, surface): # display the time on the screen
+        # Only update time if timer is running
+        if self.timerRunning:
+            # Determine amount of time passed since refTime was set up
+            self.currTime = pygame.time.get_ticks() - self.refTime
+        self.numSeconds = self.currTime // 1000 # ms -> s
+        self.numMinutes = self.numSeconds // 60 # s -> min
+        self.numSeconds = self.numSeconds - (self.numMinutes * 60) # remove the time accounted for in numMinutes
+
+        # Black box for border around timer
+        pygame.draw.rect(surface, (0,0,0), pygame.Rect(395, 45, 110, 55))
+        # White background for timer
+        pygame.draw.rect(surface, (255,255,255), pygame.Rect(400, 50, 100, 45))
+
+        # Display timer text (minutes and seconds)
+        self.timerText = "{0:02}:{1:02}".format(self.numMinutes, self.numSeconds)
+        font = pygame.font.Font('freesansbold.ttf', 30)
+        text = font.render(self.timerText, True, (0,0,0))
+        surface.blit(text, [408, 60])
+
 
 def main():
 
     clock = pygame.time.Clock()
     screen = pygame.init()
     surface = pygame.display.set_mode((900,900))
+    pygame.display.set_caption("Pynogram")
     surface.fill((255,255,255))
+
+    timer = Timer()
 
     # Determines whether user can edit grid (including clear grid)
     # Check solution is also disabled; since user can't modify grid, result of check won't change
@@ -339,26 +418,58 @@ def main():
     # (2) User has checked their solution and is wrong, but chooses to see solution
     # (3) User is not on the board (ex. popup is covering it, different menu)
     canEditGrid = True
+    solCorrect = False
+    #Used when puzzle incorrect, prevents game from continuing until user selects to try again or give up
 
-    # Set up clear button and check button (sprites)
+    # Set up clear button, check button, mute music button (sprites)
     clearButton = ClearButton()
     checkPuzzleButton = CheckPuzzleButton()
-    sprites = pygame.sprite.RenderPlain((clearButton,checkPuzzleButton))
+    muteMusicButton = MuteMusicButton()
+    sprites = pygame.sprite.RenderPlain((clearButton,checkPuzzleButton, muteMusicButton))
 
-    # Create a 10x10 board with solution from file "test.txt" (in assets folder)
+    #Popup buttons
+    puzzleComplete = button(50,115, "puzzleComplete.png")
+    pcMainMenu = button(325,495, "mainmenu.png")
+    puzzleIncorrect = button(50,115, "incorrect.png")
+    tryAgain = button(325,420, "tryAgain.png")
+    showSolution = button(325, 510, "showSolution.png")
+
+    # Create a 10x10 board with solution from file "10-1.txt" (in assets folder)
     board = Board()
-    board.setUpPuzzle(10, "test5.txt")
+    board.setUpPuzzle(10, "10-1.txt")
 
     # Display the board lines and numbers
     board.displayBoard(surface)
 
+    # Load song
+    pygame.mixer.music.load(os.path.join(assets_dir, "Arpent.mp3"))
+    pygame.mixer.music.play(-1) # loop indefinitely
+
+    #Used to prevent interaction with puzzle while popup is active
+    gameState = 0
+
     while True:
         clock.tick(60) # 60 fps
 
-        # Display all the boxes, with color dependent on their current state
-        board.displayBoxes(surface)
-        # Display the buttons (sprites)
-        sprites.draw(surface)
+        # All the code to display things on the screen goes here
+        surface.fill((255,255,255)) # white background
+        sprites.draw(surface) # clear, check, mute buttons
+        timer.displayTime(surface) # show timer
+
+        #FIXME - comments from Pedro on gameState
+        if gameState == 0:
+            board.displayBoard(surface) # grid and numbers
+            board.displayBoxes(surface) # boxes in the grid
+        elif gameState == 1:
+            if solCorrect:
+                puzzleComplete.draw(surface)
+                pcMainMenu.draw(surface)
+            else:
+                puzzleIncorrect.draw(surface)
+                tryAgain.draw(surface)
+                showSolution.draw(surface)
+
+        pygame.display.update() # Update the display only one per loop (otherwise get flickering)
 
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
@@ -366,18 +477,44 @@ def main():
             if e.type == pygame.MOUSEBUTTONDOWN:
                 x,y = pygame.mouse.get_pos()
 
-                if e.button == 1 and clearButton.rect.collidepoint(x, y) and canEditGrid: # left click on clear button
-                    board.clearGrid() # clear grid
+                if e.button == 1 and muteMusicButton.rect.collidepoint(x, y): # left click on mute music button
+                    muteMusicButton.toggleMusic() # mute/unmute music
 
-                if e.button == 1 and checkPuzzleButton.rect.collidepoint(x, y) and canEditGrid: # left click on check button
-                    # Check if user completed puzzle successfully
-                    # If they did or they choose to see solution, prevent them from editing the grid
-                    canEditGrid = checkPuzzleButton.checkPuzzle(board)
+                if gameState == 0:
+                    if e.button == 1 and clearButton.rect.collidepoint(x, y) and canEditGrid: # left click on clear button
+                        board.clearGrid() # clear grid
+                        timer.resetTimer()
 
-                if (e.button == 1 or e.button == 3) and canEditGrid: # click on box in grid
-                    selection = e.button
-                    board.clickBox(x,y,selection)
+                    if e.button == 1 and checkPuzzleButton.rect.collidepoint(x, y) and canEditGrid: # left click on check button
+                        # Check if user completed puzzle successfully
+                        # If they did or they choose to see solution, prevent them from editing the grid
+                        canEditGrid, solCorrect = checkPuzzleButton.checkPuzzle(board)
+                        #gameState switches to 1, so popup appears and prevents interaction with board
+                        gameState = 1
 
+                    if (e.button == 1 or e.button == 3) and canEditGrid: # click on box in grid
+                        selection = e.button
+                        board.clickBox(x,y,selection)
+
+                if gameState == 1:
+                    if solCorrect == False:
+                        if e.button == 1 and tryAgain.rect.collidepoint(x, y):
+                            #!!surface.fill((255, 255, 255))
+                            #!!board.displayBoard(surface)
+                            gameState = 0
+
+                        if e.button == 1 and showSolution.rect.collidepoint(x, y):
+                            timer.setRunning(False) # stop the timer
+                            canEditGrid = False
+                            board.showSolution()
+                            gameState = 0
+
+                    if solCorrect == True:
+                        timer.setRunning(False) # stop the timer
+                        canEditGrid = False
+
+                        # Functionality to return to main menu - not currently enabled
+                        #if e.button == 1 and pcMainMenu.rect.collidepoint(x, y) and canEditGrid == False:
 
 
 # Run in command prompt (otherwise closes instantly)
