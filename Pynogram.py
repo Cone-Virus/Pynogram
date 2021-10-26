@@ -1,6 +1,7 @@
 import os
 import pygame
 import math
+from sys import exit
 
 # Get the directory of the assets
 main_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -329,16 +330,14 @@ class CheckPuzzleButton(pygame.sprite.Sprite):
         return canEditGrid, solCorrect
 
 # Button for muting/unmuting the music
-class MuteMusicButton(pygame.sprite.Sprite):
+class MuteMusicButton(button):
     # Keeps track of whether music is on or not
     musicEnabled = True
 
     # Constructor
-    def __init__(self):
+    def __init__(self, x, y, image):
+        super(MuteMusicButton, self).__init__(x, y, image)
         self.musicEnabled = True
-        pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image("music-on.bmp")
-        self.rect.topleft = 790, 800 # Position on screen
 
     # Change sprite and toggle music based on current state
     def toggleMusic(self):
@@ -424,8 +423,8 @@ def main():
     # Set up clear button, check button, mute music button (sprites)
     clearButton = ClearButton()
     checkPuzzleButton = CheckPuzzleButton()
-    muteMusicButton = MuteMusicButton()
-    sprites = pygame.sprite.RenderPlain((clearButton,checkPuzzleButton, muteMusicButton))
+    muteMusicButton = MuteMusicButton(790,800,"music-on.bmp")
+    sprites = pygame.sprite.RenderPlain((clearButton,checkPuzzleButton))
 
     #Popup buttons
     puzzleComplete = button(50,115, "puzzleComplete.png")
@@ -433,6 +432,26 @@ def main():
     puzzleIncorrect = button(50,115, "incorrect.png")
     tryAgain = button(325,420, "tryAgain.png")
     showSolution = button(325, 510, "showSolution.png")
+
+    # Main menu buttons
+    quitGame = button(350, 450, "quit.png")
+    startGame = button (310, 200, "startGame.png")
+
+    # Difficulty selection buttons
+    difficulty = 0
+    size5 = button(250, 200, "size5.png")
+    size10 = button(250, 400, "size10.png")
+    size15 = button(250, 600, "size15.png")
+
+    # Level selection buttons
+    level = 0
+    level1 = button(250, 200, "level1.png")
+    level2 = button(250, 400, "level2.png")
+    level3 = button(250, 600, "level3.png")
+
+    blinkSoln = False # animation when showing solution
+
+    solnName = "" # "(difficulty)-(level).txt" format, used to set up board
 
     # Create a 10x10 board with solution from file "10-1.txt" (in assets folder)
     board = Board()
@@ -448,39 +467,153 @@ def main():
     #Used to prevent interaction with puzzle while popup is active
     gameState = 0
 
+    page = "Main Menu" # FIXME - transition testing
+
     while True:
         clock.tick(60) # 60 fps
 
-        # All the code to display things on the screen goes here
-        surface.fill((255,255,255)) # white background
-        sprites.draw(surface) # clear, check, mute buttons
-        timer.displayTime(surface) # show timer
+        if page == "Main Menu":
+            surface.fill((255,255,255)) # white background
+            muteMusicButton.draw(surface) # mute button
 
-        #FIXME - comments from Pedro on gameState
-        if gameState == 0:
-            board.displayBoard(surface) # grid and numbers
-            board.displayBoxes(surface) # boxes in the grid
-        elif gameState == 1:
-            if solCorrect:
-                puzzleComplete.draw(surface)
-                pcMainMenu.draw(surface)
-            else:
-                puzzleIncorrect.draw(surface)
-                tryAgain.draw(surface)
-                showSolution.draw(surface)
+            # Title text
+            font = pygame.font.Font('freesansbold.ttf', 70)
+            text = font.render("Pynogram", True, (0,0,0))
+            surface.blit(text, [275, 60])
+
+            # buttons
+            startGame.draw(surface)
+            quitGame.draw(surface)
+
+        elif page == "Difficulty Selection":
+            # All the code to display things on the screen goes here
+            surface.fill((255,255,255)) # white background
+            muteMusicButton.draw(surface) # mute button
+
+            # Header text
+            font = pygame.font.Font('freesansbold.ttf', 60)
+            text = font.render("Select Puzzle Size", True, (0,0,0))
+            surface.blit(text, [150, 60])
+
+            # Size buttons
+            size5.draw(surface)
+            size10.draw(surface)
+            size15.draw(surface)
+
+        elif page == "Level Selection":
+            # All the code to display things on the screen goes here
+            surface.fill((255,255,255)) # white background
+            muteMusicButton.draw(surface) # mute button
+
+            # Header text
+            font = pygame.font.Font('freesansbold.ttf', 60)
+            text = font.render("Select a Puzzle", True, (0,0,0))
+            surface.blit(text, [250, 60])
+
+            # Level buttons
+            level1.draw(surface)
+            level2.draw(surface)
+            level3.draw(surface)
+
+        elif page == "Board":
+            # All the code to display things on the screen goes here
+            surface.fill((255,255,255)) # white background
+            sprites.draw(surface) # clear, check buttons
+            muteMusicButton.draw(surface) # mute button
+            timer.displayTime(surface) # show timer
+
+            #FIXME - comments from Pedro on gameState
+            if gameState == 0:
+                board.displayBoard(surface) # grid and numbers
+                board.displayBoxes(surface) # boxes in the grid
+            elif gameState == 1:
+                if solCorrect:
+                    puzzleComplete.draw(surface)
+                    pcMainMenu.draw(surface)
+                else:
+                    puzzleIncorrect.draw(surface)
+                    tryAgain.draw(surface)
+                    showSolution.draw(surface)
+
+            if blinkSoln: # animation - FIXME
+                timer.resetTimer()
+                timer.displayTime(surface) # show timer
+                timer.setRunning(False)
+                pygame.display.update()
+
+                pygame.time.wait(3000)
+                board.clearGrid()
+                board.displayBoxes(surface)
+                pygame.display.update()
+
+                pygame.time.wait(1000)
+                board.showSolution()
+                board.displayBoxes(surface)
+                pygame.display.update()
+
+                pygame.time.wait(1000)
+                board.clearGrid()
+                timer.resetTimer()
+                timer.setRunning(True)
+                blinkSoln = False
 
         pygame.display.update() # Update the display only one per loop (otherwise get flickering)
 
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 pygame.quit()
+                exit() # Prevents error message when quitting
+
             if e.type == pygame.MOUSEBUTTONDOWN:
                 x,y = pygame.mouse.get_pos()
 
                 if e.button == 1 and muteMusicButton.rect.collidepoint(x, y): # left click on mute music button
                     muteMusicButton.toggleMusic() # mute/unmute music
 
-                if gameState == 0:
+                elif e.button == 1 and page == "Main Menu" and quitGame.rect.collidepoint(x, y): # quit game button
+                    pygame.quit()
+                    exit() # Prevents error message when qutting
+
+                elif e.button == 1 and page == "Main Menu" and startGame.rect.collidepoint(x, y): # start game button
+                    page = "Difficulty Selection"
+
+                # FIXME - way to respond if any button in group is clicked? (difficulty selection)
+                elif e.button == 1 and page == "Difficulty Selection" and size5.rect.collidepoint(x, y):
+                    difficulty = 5
+                    page = "Level Selection"
+                elif e.button == 1 and page == "Difficulty Selection" and size10.rect.collidepoint(x, y):
+                    difficulty = 10
+                    page = "Level Selection"
+                elif e.button == 1 and page == "Difficulty Selection" and size15.rect.collidepoint(x, y):
+                    difficulty = 15
+                    page = "Level Selection"
+                # FIXME - way to respond if any button in group is clicked? (difficulty selection)
+
+                # FIXME - way to respond if any button in group is clicked? (difficulty selection)
+                elif e.button == 1 and page == "Level Selection" and level1.rect.collidepoint(x, y):
+                    level = 1
+                    solnName = str(difficulty) + "-" + str(level) + ".txt"
+                    board.setUpPuzzle(difficulty, solnName)
+                    page = "Board"
+                    timer.resetTimer()
+                    timer.setRunning(True)
+                elif e.button == 1 and page == "Level Selection" and level2.rect.collidepoint(x, y):
+                    level = 2
+                    solnName = str(difficulty) + "-" + str(level) + ".txt"
+                    board.setUpPuzzle(difficulty, solnName)
+                    page = "Board"
+                    timer.resetTimer()
+                    timer.setRunning(True)
+                elif e.button == 1 and page == "Level Selection" and level3.rect.collidepoint(x, y):
+                    level = 3
+                    solnName = str(difficulty) + "-" + str(level) + ".txt"
+                    board.setUpPuzzle(difficulty, solnName)
+                    page = "Board"
+                    timer.resetTimer()
+                    timer.setRunning(True)
+                # FIXME - way to respond if any button in group is clicked? (difficulty selection)
+
+                elif page == "Board" and gameState == 0:
                     if e.button == 1 and clearButton.rect.collidepoint(x, y) and canEditGrid: # left click on clear button
                         board.clearGrid() # clear grid
                         timer.resetTimer()
@@ -491,12 +624,15 @@ def main():
                         canEditGrid, solCorrect = checkPuzzleButton.checkPuzzle(board)
                         #gameState switches to 1, so popup appears and prevents interaction with board
                         gameState = 1
+                        if solCorrect:
+                            timer.setRunning(False) # stop the timer
+                            canEditGrid = False
 
                     if (e.button == 1 or e.button == 3) and canEditGrid: # click on box in grid
                         selection = e.button
                         board.clickBox(x,y,selection)
 
-                if gameState == 1:
+                elif page == "Board" and gameState == 1:
                     if solCorrect == False:
                         if e.button == 1 and tryAgain.rect.collidepoint(x, y):
                             #!!surface.fill((255, 255, 255))
@@ -504,17 +640,19 @@ def main():
                             gameState = 0
 
                         if e.button == 1 and showSolution.rect.collidepoint(x, y):
-                            timer.setRunning(False) # stop the timer
-                            canEditGrid = False
+                            #timer.setRunning(False) # stop the timer
+                            #canEditGrid = False
+                            #board.showSolution()
+                            #gameState = 0
                             board.showSolution()
+                            blinkSoln = True
                             gameState = 0
 
-                    if solCorrect == True:
-                        timer.setRunning(False) # stop the timer
-                        canEditGrid = False
-
-                        # Functionality to return to main menu - not currently enabled
-                        #if e.button == 1 and pcMainMenu.rect.collidepoint(x, y) and canEditGrid == False:
+                    # Return to main menu
+                    if solCorrect == True and e.button == 1 and pcMainMenu.rect.collidepoint(x, y) and canEditGrid == False:
+                        page = "Main Menu"
+                        gameState = 0
+                        canEditGrid = True
 
 
 # Run in command prompt (otherwise closes instantly)
