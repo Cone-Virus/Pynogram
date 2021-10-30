@@ -661,7 +661,9 @@ def main():
                         page = "Main Menu"
                         gameState = 0
                         canEditGrid = True
-
+                        notNew = True
+                        level.difficulty = ""
+                        level.solnName = ""
 
 # Run in command prompt (otherwise closes instantly)
 main()
