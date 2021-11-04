@@ -53,20 +53,6 @@ class Board:
                 colCount = colCount + 1
             rowCount = rowCount + 1
 
-    # Prints solution array
-    def printSolution(self):
-        for i in range(self.size):
-            for j in range(self.size):
-                print(self.solution[i][j], end="")
-            print("\n")
-
-    # Prints grid array
-    def printGrid(self):
-        for i in range(self.size):
-            for j in range(self.size):
-                print(self.grid[i][j], end="")
-            print("\n")
-
     # Check if grid matches solution
     # Not a match if grid is filled (1) and solution is not filled (0 or 2)
     # Not a match if grid is not filled (0 or 2) and solution is filled (1)
@@ -79,7 +65,6 @@ class Board:
                 ):
                     return False
         return True # All boxes are correct
-
 
     # Show solution - set all boxes in grid to match solution
     def showSolution(self):
@@ -106,10 +91,6 @@ class Board:
             self.grid[rowNum][colNum] = 0
         else: # Not "X"", set to "X""
             self.grid[rowNum][colNum] = 2
-
-    # Return the state (0, 1, or 2) of the grid box at the specified row and column
-    def getGridBoxState(self, rowNum, colNum): # Row and column numbers start at 0
-        return self.grid[rowNum][colNum]
 
     # Returns a list of the sizes of the "blocks" of the provided solution row
     # These numbers would be to the left of the corresponding row in the grid GUI
@@ -372,7 +353,7 @@ class levelSelect():
 
         # Solution file name
         self.solnName = ""
-    
+
     def genSol(self): # Generate Solution
         self.solnName = self.difficulty + "-" + self.level + ".txt"
 
@@ -387,7 +368,7 @@ class levelSelect():
         self.size5.draw(surface)
         self.size10.draw(surface)
         self.size15.draw(surface)
-        
+
         # Interaction loop
         for e in pygame.event.get():
             if e.type == pygame.MOUSEBUTTONDOWN:
@@ -398,7 +379,7 @@ class levelSelect():
                     elif self.size5.rect.collidepoint(x, y): # Selection of levels
                         self.difficulty = "5" # Select level 5
                     elif self.size10.rect.collidepoint(x, y): # Selection of levels
-                        self.difficulty = "10" # Select level 10                        
+                        self.difficulty = "10" # Select level 10
                     elif self.size15.rect.collidepoint(x, y): # Selection of levels
                         self.difficulty = "15" # Select level 15
 
@@ -521,7 +502,7 @@ def main():
     blinkSoln = False # animation when showing solution
 
     # Load song
-    pygame.mixer.music.load(os.path.join(assets_dir, "Arpent.wav"))
+    pygame.mixer.music.load(os.path.join(assets_dir, "Arpent.mp3"))
     pygame.mixer.music.play(-1) # loop indefinitely
 
     #Used to prevent interaction with puzzle while popup is active
@@ -594,7 +575,7 @@ def main():
                 timer.resetTimer()
                 timer.setRunning(True)
                 blinkSoln = False
-        
+
         if level.solnName != "" and notNew:
             page = "Board"
             notNew = False
@@ -608,7 +589,7 @@ def main():
             if e.type == pygame.QUIT:
                 pygame.quit()
                 exit() # Prevents error message when quitting
-            
+
             if e.type == pygame.MOUSEBUTTONDOWN:
                 x,y = pygame.mouse.get_pos()
 
@@ -643,15 +624,9 @@ def main():
                 elif page == "Board" and gameState == 1:
                     if solCorrect == False:
                         if e.button == 1 and tryAgain.rect.collidepoint(x, y):
-                            #!!surface.fill((255, 255, 255))
-                            #!!board.displayBoard(surface)
                             gameState = 0
 
                         if e.button == 1 and showSolution.rect.collidepoint(x, y):
-                            #timer.setRunning(False) # stop the timer
-                            #canEditGrid = False
-                            #board.showSolution()
-                            #gameState = 0
                             board.showSolution()
                             blinkSoln = True
                             gameState = 0
