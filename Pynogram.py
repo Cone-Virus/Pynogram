@@ -337,6 +337,37 @@ class MuteMusicButton(button):
             self.image, self.rect = load_image("images/music-on.bmp")
             self.rect.topleft = 790, 800 # Position on screen
 
+class Tutorial():
+    def __init__(self):
+        # Back Button
+        self.back_button = button(10, 750, "images/Back-Button.png")
+
+        # Title Header
+        font = pygame.font.Font('assets/font/freesansbold.ttf', 60) # Title
+        self.text = font.render("Tutorial", True, (0,0,0))
+
+        # Tutorial Image
+        self.tut = button(140,200, "images/Tutorial.png") # Loading in as button because im lazy
+
+    def tutScreen(self,surface):
+        surface.fill((255,255,255))
+        surface.blit(self.text, [350,60])
+
+        # Draw Button
+        self.back_button.draw(surface)
+
+        # Tutorial Image
+        self.tut.draw(surface)
+
+        # Interaction loop
+        for e in pygame.event.get():
+            if e.type == pygame.MOUSEBUTTONDOWN:
+                x,y = pygame.mouse.get_pos()
+                if e.button == 1:
+                    if self.back_button.rect.collidepoint(x, y): # left click on back button
+                        return "Board" # return board state
+        return "Tutorial"
+
 class levelSelect():
     def __init__(self):
         # Difficulty selection buttons
@@ -471,6 +502,7 @@ def main():
     level = levelSelect()
     timer = Timer()
     board = Board()
+    tutorial = Tutorial()
 
     # Determines whether user can edit grid (including clear grid)
     # Check solution is also disabled; since user can't modify grid, result of check won't change
@@ -488,7 +520,10 @@ def main():
     muteMusicButton = MuteMusicButton(790,800,"images/music-on.bmp")
     sprites = pygame.sprite.RenderPlain((clearButton,checkPuzzleButton))
 
-    #Popup buttons
+    # Tutorial Button
+    tut = button(10,775, "images/Tutorial-Button.png")
+
+    # Popup buttons
     puzzleComplete = button(50,115, "images/puzzleComplete.png")
     pcMainMenu = button(325,495, "images/mainmenu.png")
     puzzleIncorrect = button(50,115, "images/incorrect.png")
@@ -534,12 +569,16 @@ def main():
             if level.difficulty != "":
                 level.lvlSelect(surface,muteMusicButton)
 
+        elif page == "Tutorial":
+            page = tutorial.tutScreen(surface)
+
         elif page == "Board":
             # All the code to display things on the screen goes here
             surface.fill((255,255,255)) # white background
             sprites.draw(surface) # clear, check buttons
             muteMusicButton.draw(surface) # mute button
             timer.displayTime(surface) # show timer
+            tut.draw(surface) # tutorial button
 
             #FIXME - comments from Pedro on gameState
             if gameState == 0:
@@ -602,6 +641,9 @@ def main():
 
                 elif e.button == 1 and page == "Main Menu" and startGame.rect.collidepoint(x, y): # start game button
                     page = "Difficulty Selection"
+
+                elif e.button == 1 and tut.rect.collidepoint(x, y):
+                    page = "Tutorial"
 
                 elif page == "Board" and gameState == 0:
                     if e.button == 1 and clearButton.rect.collidepoint(x, y) and canEditGrid: # left click on clear button
