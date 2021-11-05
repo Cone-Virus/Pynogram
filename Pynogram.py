@@ -178,11 +178,11 @@ class Board:
             for y in x:
                 # Render numbers >= 10 in smaller font and fix spacing
                 if y >= 10:
-                    font = pygame.font.Font(None, 26)
+                    font = pygame.font.Font("assets/font/freesansbold.ttf", 26)
                     text = font.render(str(y), True, (0,0,0))
                     surface.blit(text,(self.boardX - 40 - (count * 35) ,self.boardY + 10 + (posX * 35)))
                 else:
-                    font = pygame.font.Font(None, 30)
+                    font = pygame.font.Font("assets/font/freesansbold.ttf", 30)
                     text = font.render(str(y), True, (0,0,0))
                     surface.blit(text,(self.boardX - 35 - (count * 35) ,self.boardY + 5 + (posX * 35)))
 
@@ -195,13 +195,13 @@ class Board:
             for y in x:
                 # Render numbers >= 10 in smaller font and fix spacing
                 if y >= 10:
-                    font = pygame.font.Font(None, 26)
+                    font = pygame.font.Font("assets/font/freesansbold.ttf", 26)
                     text = font.render(str(y), True, (0,0,0))
-                    surface.blit(text,(self.boardX + 5 + (posX * 35),(self.boardY - 30 - (count * 35))))
+                    surface.blit(text,(self.boardX + 5 + (posX * 35),(self.boardY - 40 - (count * 35))))
                 else:
-                    font = pygame.font.Font(None, 30)
+                    font = pygame.font.Font("assets/font/freesansbold.ttf", 30)
                     text = font.render(str(y), True, (0,0,0))
-                    surface.blit(text,(self.boardX + 8 + (posX * 35),(self.boardY - 30 - (count * 35))))
+                    surface.blit(text,(self.boardX + 8 + (posX * 35),(self.boardY - 40 - (count * 35))))
 
                 count = count + 1
             posX = posX + 1
@@ -286,15 +286,15 @@ class ClearButton(pygame.sprite.Sprite):
     # Constructor
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image("clear.bmp")
-        self.rect.topleft = 725, 60 # Position on screen
+        self.image, self.rect = load_image("images/clear.bmp")
+        self.rect.topleft = 725, 120 # Position on screen
 
 # Button for checking the puzzle
 class CheckPuzzleButton(pygame.sprite.Sprite):
     # Constructor
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image("check.bmp")
+        self.image, self.rect = load_image("images/check.bmp")
         self.rect.topleft = 325, 800 # Position on screen
 
     # Determine if user completed the puzzle, and display appropriate message
@@ -329,38 +329,38 @@ class MuteMusicButton(button):
         if self.musicEnabled: # music on -> mute music
             self.musicEnabled = False
             pygame.mixer.music.pause()
-            self.image, self.rect = load_image("music-off.bmp")
+            self.image, self.rect = load_image("images/music-off.bmp")
             self.rect.topleft = 790, 800 # Position on screen
         else: # music off -> turn on music
             self.musicEnabled = True
             pygame.mixer.music.unpause()
-            self.image, self.rect = load_image("music-on.bmp")
+            self.image, self.rect = load_image("images/music-on.bmp")
             self.rect.topleft = 790, 800 # Position on screen
 
 class levelSelect():
     def __init__(self):
         # Difficulty selection buttons
         self.difficulty = ""
-        self.size5 = button(250, 200, "size5.png")
-        self.size10 = button(250, 400, "size10.png")
-        self.size15 = button(250, 600, "size15.png")
+        self.size5 = button(250, 200, "images/size5.png")
+        self.size10 = button(250, 400, "images/size10.png")
+        self.size15 = button(250, 600, "images/size15.png")
 
         # Level selection buttons
         self.level = ""
-        self.level1 = button(250, 200, "level1.png")
-        self.level2 = button(250, 400, "level2.png")
-        self.level3 = button(250, 600, "level3.png")
+        self.level1 = button(250, 200, "images/level1.png")
+        self.level2 = button(250, 400, "images/level2.png")
+        self.level3 = button(250, 600, "images/level3.png")
 
         # Solution file name
         self.solnName = ""
 
     def genSol(self): # Generate Solution
-        self.solnName = self.difficulty + "-" + self.level + ".txt"
+        self.solnName = "levels/" + self.difficulty + "-" + self.level + ".txt"
 
     def Difficulty(self,surface,mute): # From main to difficulty selection
         surface.fill((255,255,255)) # white background
         mute.draw(surface) # mute button
-        font = pygame.font.Font('freesansbold.ttf', 60) # Title
+        font = pygame.font.Font('assets/font/freesansbold.ttf', 60) # Title
         text = font.render("Select Puzzle Size", True, (0,0,0))
         surface.blit(text, [150, 60])
 
@@ -389,7 +389,7 @@ class levelSelect():
         mute.draw(surface) # mute button
 
         # Header text
-        font = pygame.font.Font('freesansbold.ttf', 60)
+        font = pygame.font.Font('assets/font/freesansbold.ttf', 60)
         text = font.render("Select a Puzzle", True, (0,0,0))
         surface.blit(text, [250, 60])
 
@@ -452,15 +452,15 @@ class Timer():
         self.numSeconds = self.numSeconds - (self.numMinutes * 60) # remove the time accounted for in numMinutes
 
         # Black box for border around timer
-        pygame.draw.rect(surface, (0,0,0), pygame.Rect(395, 45, 110, 55))
+        pygame.draw.rect(surface, (0,0,0), pygame.Rect(745, 45, 110, 55))
         # White background for timer
-        pygame.draw.rect(surface, (255,255,255), pygame.Rect(400, 50, 100, 45))
+        pygame.draw.rect(surface, (255,255,255), pygame.Rect(750, 50, 100, 45))
 
         # Display timer text (minutes and seconds)
         self.timerText = "{0:02}:{1:02}".format(self.numMinutes, self.numSeconds)
-        font = pygame.font.Font(None, 30)
+        font = pygame.font.Font("assets/font/freesansbold.ttf", 30)
         text = font.render(self.timerText, True, (0,0,0))
-        surface.blit(text, [408, 60])
+        surface.blit(text, [758, 60])
 
 def main():
     clock = pygame.time.Clock()
@@ -485,24 +485,24 @@ def main():
     # Set up clear button, check button, mute music button (sprites)
     clearButton = ClearButton()
     checkPuzzleButton = CheckPuzzleButton()
-    muteMusicButton = MuteMusicButton(790,800,"music-on.bmp")
+    muteMusicButton = MuteMusicButton(790,800,"images/music-on.bmp")
     sprites = pygame.sprite.RenderPlain((clearButton,checkPuzzleButton))
 
     #Popup buttons
-    puzzleComplete = button(50,115, "puzzleComplete.png")
-    pcMainMenu = button(325,495, "mainmenu.png")
-    puzzleIncorrect = button(50,115, "incorrect.png")
-    tryAgain = button(325,420, "tryAgain.png")
-    showSolution = button(325, 510, "showSolution.png")
+    puzzleComplete = button(50,115, "images/puzzleComplete.png")
+    pcMainMenu = button(325,495, "images/mainmenu.png")
+    puzzleIncorrect = button(50,115, "images/incorrect.png")
+    tryAgain = button(325,420, "images/tryAgain.png")
+    showSolution = button(325, 510, "images/showSolution.png")
 
     # Main menu buttons
-    quitGame = button(335, 450, "quit.png")
-    startGame = button (305, 300, "startGame.png")
+    quitGame = button(335, 450, "images/quit.png")
+    startGame = button (305, 300, "images/startGame.png")
 
     blinkSoln = False # animation when showing solution
 
     # Load song
-    pygame.mixer.music.load(os.path.join(assets_dir, "Arpent.mp3"))
+    pygame.mixer.music.load(os.path.join(assets_dir, "music/Arpent.wav"))
     pygame.mixer.music.play(-1) # loop indefinitely
 
     #Used to prevent interaction with puzzle while popup is active
@@ -520,7 +520,7 @@ def main():
             muteMusicButton.draw(surface) # mute button
 
             # Title text
-            font = pygame.font.Font('freesansbold.ttf', 70)
+            font = pygame.font.Font('assets/font/freesansbold.ttf', 70)
             text = font.render("Pynogram", True, (0,0,0))
             surface.blit(text, [275, 60])
 
