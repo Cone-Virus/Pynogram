@@ -362,7 +362,7 @@ class levelSelect():
         mute.draw(surface) # mute button
         font = pygame.font.Font('assets/font/freesansbold.ttf', 60) # Title
         text = font.render("Select Puzzle Size", True, (0,0,0))
-        surface.blit(text, [150, 60])
+        surface.blit(text, [195, 60])
 
         # Draw Difficulty Buttons
         self.size5.draw(surface)
@@ -460,7 +460,7 @@ class Timer():
         self.timerText = "{0:02}:{1:02}".format(self.numMinutes, self.numSeconds)
         font = pygame.font.Font("assets/font/freesansbold.ttf", 30)
         text = font.render(self.timerText, True, (0,0,0))
-        surface.blit(text, [758, 60])
+        surface.blit(text, [760, 60])
 
 def main():
     clock = pygame.time.Clock()
