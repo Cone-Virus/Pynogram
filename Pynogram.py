@@ -12,6 +12,7 @@ import CheckPuzzleButton
 import MuteMusicButton
 import Tutorial
 import LevelSelect
+import GamePause
 
 # Functions from other files
 import load_image
@@ -28,6 +29,7 @@ def main():
     timer = Timer.Timer()
     board = Board.Board()
     tutorial = Tutorial.Tutorial()
+    pause = GamePause.Pause()
 
     # Determines whether user can edit grid (including clear grid)
     # Check solution is also disabled; since user can't modify grid, result of check won't change
@@ -46,6 +48,9 @@ def main():
 
     # Tutorial Button
     tut = Button.Button(250,400, "images/Tutorial-Button.png")
+
+    # Pause Button 
+    pauseB = Button.Button(10,10, "images/Pause-Button.png")
 
     # Popup buttons
     puzzleComplete = Button.Button(50,115, "images/puzzleComplete.png")
@@ -97,6 +102,10 @@ def main():
         elif page == "Tutorial":
             page = tutorial.tutScreen(surface,muteMusicButton)
 
+
+        elif page == "Pause":
+            page = pause.pauseScreen(surface,muteMusicButton)
+
         elif page == "Board":
             # All the code to display things on the screen goes here
             surface.fill((255,255,255)) # white background
@@ -104,6 +113,7 @@ def main():
             checkPuzzleButton.draw(surface) # check puzzle button
             muteMusicButton.draw(surface) # mute button
             timer.displayTime(surface) # show timer
+            pauseB.draw(surface) # Pause button
 
             #FIXME - comments from Pedro on gameState
             if gameState == 0:
@@ -151,6 +161,22 @@ def main():
 
                 elif e.button == 1 and page == "Main Menu" and tut.rect.collidepoint(x, y):
                     page = "Tutorial"
+
+                elif e.button == 1 and page == "Board" and pauseB.rect.collidepoint(x,y):
+                    timer.setRunning(False)
+                    page = "Pause"
+
+                elif page == "Pause Main":
+                    page = "Main Menu"
+                    gameState = 0
+                    canEditGrid = True
+                    notNew = True
+                    level.difficulty = ""
+                    level.solnName = ""
+
+                elif page == "Resume":
+                    timer.setRunning(True)
+                    page = "Board"
 
                 elif page == "Board" and gameState == 0:
                     if e.button == 1 and clearButton.rect.collidepoint(x, y) and canEditGrid: # left click on clear button
