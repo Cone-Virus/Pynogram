@@ -45,7 +45,7 @@ def main():
     muteMusicButton = MuteMusicButton.MuteMusicButton(790,800,"images/music-on.bmp")
 
     # Tutorial Button
-    tut = Button.Button(10,775, "images/Tutorial-Button.png")
+    tut = Button.Button(250,400, "images/Tutorial-Button.png")
 
     # Popup buttons
     puzzleComplete = Button.Button(50,115, "images/puzzleComplete.png")
@@ -55,8 +55,8 @@ def main():
     showSolution = Button.Button(325, 510, "images/showSolution.png")
 
     # Main menu buttons
-    quitGame = Button.Button(335, 450, "images/quit.png")
-    startGame = Button.Button (305, 300, "images/startGame.png")
+    quitGame = Button.Button(280, 550, "images/quit.png")
+    startGame = Button.Button (185, 200, "images/startGame.png")
 
     blinkSoln = False # animation when showing solution
 
@@ -77,11 +77,12 @@ def main():
         if page == "Main Menu":
             surface.fill((255,255,255)) # white background
             muteMusicButton.draw(surface) # mute button
+            tut.draw(surface) # Tutorial Button
 
             # Title text
             font = pygame.font.Font(get_path.get_path('assets/font/freesansbold.ttf'), 70)
             text = font.render("Pynogram", True, (0,0,0))
-            surface.blit(text, [275, 60])
+            surface.blit(text, [280, 40])
 
             # buttons
             startGame.draw(surface)
@@ -94,7 +95,7 @@ def main():
                 level.lvlSelect(surface,muteMusicButton)
 
         elif page == "Tutorial":
-            page = tutorial.tutScreen(surface)
+            page = tutorial.tutScreen(surface,muteMusicButton)
 
         elif page == "Board":
             # All the code to display things on the screen goes here
@@ -103,7 +104,6 @@ def main():
             checkPuzzleButton.draw(surface) # check puzzle button
             muteMusicButton.draw(surface) # mute button
             timer.displayTime(surface) # show timer
-            tut.draw(surface) # tutorial button
 
             #FIXME - comments from Pedro on gameState
             if gameState == 0:
@@ -149,7 +149,7 @@ def main():
                 elif e.button == 1 and page == "Main Menu" and startGame.rect.collidepoint(x, y): # start game button
                     page = "Difficulty Selection"
 
-                elif e.button == 1 and tut.rect.collidepoint(x, y):
+                elif e.button == 1 and page == "Main Menu" and tut.rect.collidepoint(x, y):
                     page = "Tutorial"
 
                 elif page == "Board" and gameState == 0:

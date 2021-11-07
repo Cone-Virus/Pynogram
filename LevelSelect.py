@@ -12,9 +12,12 @@ class LevelSelect():
 
         # Level selection buttons
         self.level = ""
-        self.level1 = Button.Button(250, 200, "images/level1.png")
-        self.level2 = Button.Button(250, 400, "images/level2.png")
-        self.level3 = Button.Button(250, 600, "images/level3.png")
+        self.level1 = Button.Button(125, 225, "images/level1.png")
+        self.level2 = Button.Button(375, 225, "images/level2.png")
+        self.level3 = Button.Button(625, 225, "images/level3.png")
+        self.level4 = Button.Button(125, 500, "images/level4.png")
+        self.level5 = Button.Button(375, 500, "images/level5.png")
+        self.level6 = Button.Button(625, 500, "images/level6.png")
 
         # Solution file name
         self.solnName = ""
@@ -62,6 +65,9 @@ class LevelSelect():
         self.level1.draw(surface)
         self.level2.draw(surface)
         self.level3.draw(surface)
+        self.level4.draw(surface)
+        self.level5.draw(surface)
+        self.level6.draw(surface)
 
         # Interaction loop
         for e in pygame.event.get():
@@ -79,3 +85,13 @@ class LevelSelect():
                     elif self.level3.rect.collidepoint(x, y):
                         self.level = "3"
                         self.genSol()
+                    elif self.level4.rect.collidepoint(x, y):
+                        self.level = "4"
+                        self.genSol()
+                    elif self.level5.rect.collidepoint(x, y):
+                        self.level = "5"
+                        self.genSol()
+                    elif self.level6.rect.collidepoint(x, y):
+                        self.level = "6"
+                        self.genSol()
+
