@@ -16,10 +16,7 @@ import LevelSelect
 # Functions from other files
 import load_image
 import blink_anim
-
-# Get the directory of the assets
-main_dir = os.path.split(os.path.abspath(__file__))[0]
-assets_dir = os.path.join(main_dir, "assets")
+import get_path
 
 def main():
     clock = pygame.time.Clock()
@@ -64,7 +61,7 @@ def main():
     blinkSoln = False # animation when showing solution
 
     # Load song
-    pygame.mixer.music.load(os.path.join(assets_dir, "music/Arpent.wav"))
+    pygame.mixer.music.load(get_path.get_path("assets/music/Arpent.wav"))
     pygame.mixer.music.play(-1) # loop indefinitely
 
     #Used to prevent interaction with puzzle while popup is active
@@ -82,7 +79,7 @@ def main():
             muteMusicButton.draw(surface) # mute button
 
             # Title text
-            font = pygame.font.Font('assets/font/freesansbold.ttf', 70)
+            font = pygame.font.Font(get_path.get_path('assets/font/freesansbold.ttf'), 70)
             text = font.render("Pynogram", True, (0,0,0))
             surface.blit(text, [275, 60])
 
@@ -128,7 +125,7 @@ def main():
         if level.solnName != "" and notNew:
             page = "Board"
             notNew = False
-            board.setUpPuzzle(int(level.difficulty), level.solnName, assets_dir)
+            board.setUpPuzzle(int(level.difficulty), level.solnName)
             timer.resetTimer()
             timer.setRunning(True)
 

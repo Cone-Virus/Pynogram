@@ -1,6 +1,7 @@
 import os
 import pygame
 import math
+import get_path
 
 class Board:
 
@@ -22,14 +23,14 @@ class Board:
         self.solNumsY = []
 
     # Set up puzzle with size, grid and solution arrays, numbers to go alongside grid
-    def setUpPuzzle(self, size, filename, assets_dir):
+    def setUpPuzzle(self, size, filename):
         self.solution = []
         self.grid = []
         self.size = size
         for i in range(self.size): # Initialize both arrays
             self.grid.append([0]*self.size)
             self.solution.append([0]*self.size)
-        self.loadSolution(filename, assets_dir) # Fill in the values for solution array
+        self.loadSolution(filename) # Fill in the values for solution array
 
         #Set up row and column numbers
         self.solNumsX = self.solnRowNumbers()
@@ -37,8 +38,9 @@ class Board:
 
 
     # Loads solution from text file
-    def loadSolution(self,filename,assets_dir):
-        filename = os.path.join(assets_dir, filename) # File is in assets folder
+    def loadSolution(self,filename):
+        filename = "assets/" + filename
+        filename = get_path.get_path(filename)
         rowCount = 0
         f = open(filename, 'r')
         for line in f.readlines(): # Each row
@@ -170,11 +172,11 @@ class Board:
             for y in x:
                 # Render numbers >= 10 in smaller font and fix spacing
                 if y >= 10:
-                    font = pygame.font.Font("assets/font/freesansbold.ttf", 26)
+                    font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 26)
                     text = font.render(str(y), True, (0,0,0))
                     surface.blit(text,(self.boardX - 40 - (count * 35) ,self.boardY + 10 + (posX * 35)))
                 else:
-                    font = pygame.font.Font("assets/font/freesansbold.ttf", 30)
+                    font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 30)
                     text = font.render(str(y), True, (0,0,0))
                     surface.blit(text,(self.boardX - 35 - (count * 35) ,self.boardY + 5 + (posX * 35)))
 
@@ -187,11 +189,11 @@ class Board:
             for y in x:
                 # Render numbers >= 10 in smaller font and fix spacing
                 if y >= 10:
-                    font = pygame.font.Font("assets/font/freesansbold.ttf", 26)
+                    font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 26)
                     text = font.render(str(y), True, (0,0,0))
                     surface.blit(text,(self.boardX + 5 + (posX * 35),(self.boardY - 40 - (count * 35))))
                 else:
-                    font = pygame.font.Font("assets/font/freesansbold.ttf", 30)
+                    font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 30)
                     text = font.render(str(y), True, (0,0,0))
                     surface.blit(text,(self.boardX + 8 + (posX * 35),(self.boardY - 40 - (count * 35))))
 

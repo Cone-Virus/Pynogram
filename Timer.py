@@ -1,4 +1,5 @@
 import pygame
+import get_path
 
 class Timer():
     timerRunning = True # counts up when true, stops when False
@@ -43,6 +44,6 @@ class Timer():
 
         # Display timer text (minutes and seconds)
         self.timerText = "{0:02}:{1:02}".format(self.numMinutes, self.numSeconds)
-        font = pygame.font.Font("assets/font/freesansbold.ttf", 30)
+        font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 30)
         text = font.render(self.timerText, True, (0,0,0))
         surface.blit(text, [760, 60])

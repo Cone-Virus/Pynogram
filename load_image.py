@@ -1,14 +1,11 @@
 import os
 import pygame
+import get_path
 
 # Load an image from a file; imageName looks like "name.ext"
 def load_image(imageName):
-    # Get the directory of the assets
-    main_dir = os.path.split(os.path.abspath(__file__))[0]
-    assets_dir = os.path.join(main_dir, "assets")
-    
-    # Need image name to include path to load it into game
-    loadName = os.path.join(assets_dir, imageName)
+    imageName = "assets/" + imageName
+    loadName = get_path.get_path(imageName)
     try:
         # Actually load the image here
         image = pygame.image.load(loadName).convert_alpha()

@@ -1,5 +1,6 @@
 import pygame
 import Button
+import get_path
 
 class Tutorial():
     def __init__(self):
@@ -7,7 +8,7 @@ class Tutorial():
         self.back_button = Button.Button(10, 750, "images/Back-Button.png")
 
         # Title Header
-        font = pygame.font.Font('assets/font/freesansbold.ttf', 60) # Title
+        font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 60) # Title
         self.text = font.render("Tutorial", True, (0,0,0))
 
         # Tutorial Image

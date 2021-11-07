@@ -1,5 +1,6 @@
 import pygame
 import Button
+import get_path
 
 class LevelSelect():
     def __init__(self):
@@ -24,7 +25,7 @@ class LevelSelect():
     def Difficulty(self,surface,mute): # From main to difficulty selection
         surface.fill((255,255,255)) # white background
         mute.draw(surface) # mute button
-        font = pygame.font.Font('assets/font/freesansbold.ttf', 60) # Title
+        font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 60) # Title
         text = font.render("Select Puzzle Size", True, (0,0,0))
         surface.blit(text, [195, 60])
 
@@ -53,7 +54,7 @@ class LevelSelect():
         mute.draw(surface) # mute button
 
         # Header text
-        font = pygame.font.Font('assets/font/freesansbold.ttf', 60)
+        font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 60)
         text = font.render("Select a Puzzle", True, (0,0,0))
         surface.blit(text, [250, 60])
 
