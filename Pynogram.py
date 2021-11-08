@@ -140,6 +140,18 @@ def main():
             timer.setRunning(True)
 
         pygame.display.update() # Update the display only one per loop (otherwise get flickering)
+        
+        if page == "Pause Main":
+            page = "Main Menu"
+            gameState = 0
+            canEditGrid = True
+            notNew = True
+            level.difficulty = ""
+            level.solnName = ""
+
+        elif page == "Resume":
+            timer.setRunning(True)
+            page = "Board"
 
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
@@ -165,18 +177,6 @@ def main():
                 elif e.button == 1 and page == "Board" and pauseB.rect.collidepoint(x,y):
                     timer.setRunning(False)
                     page = "Pause"
-
-                elif page == "Pause Main":
-                    page = "Main Menu"
-                    gameState = 0
-                    canEditGrid = True
-                    notNew = True
-                    level.difficulty = ""
-                    level.solnName = ""
-
-                elif page == "Resume":
-                    timer.setRunning(True)
-                    page = "Board"
 
                 elif page == "Board" and gameState == 0:
                     if e.button == 1 and clearButton.rect.collidepoint(x, y) and canEditGrid: # left click on clear button
