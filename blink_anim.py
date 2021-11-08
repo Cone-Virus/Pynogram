@@ -1,20 +1,20 @@
 import pygame
 
 # Slow blinking animation to show solution and then clear board
-def blink_anim(timer, board, surface):
+def blink_anim(timer, board, surface, themeMgr):
     timer.resetTimer()
-    timer.displayTime(surface) # show timer
+    timer.displayTime(surface, themeMgr) # show timer
     timer.setRunning(False)
     pygame.display.update()
 
     pygame.time.wait(3000)
     board.clearGrid()
-    board.displayBoxes(surface)
+    board.displayBoxes(surface, themeMgr)
     pygame.display.update()
 
     pygame.time.wait(1000)
     board.showSolution()
-    board.displayBoxes(surface)
+    board.displayBoxes(surface, themeMgr)
     pygame.display.update()
 
     pygame.time.wait(1000)

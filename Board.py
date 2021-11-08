@@ -141,8 +141,8 @@ class Board:
             fullList.append(currColList)
         return fullList
 
-    def displayBoard(self, surface): # General initialization of board
-        self.color = (255,255,255)
+    def displayBoard(self, surface, themeMgr): # General initialization of board
+        self.color = (255,255,255) # with displayBoxes already working, I don't think this displays anything?
         if self.size == 5:
             self.boardX = 350
             self.boardY = 350
@@ -155,8 +155,8 @@ class Board:
             self.boardX = 185
             self.boardY = 240
             self.boardsize = 530
-        self.load_board(surface)
-        pygame.draw.rect(surface, (0,0,0), pygame.Rect(self.boardX, self.boardY, self.boardsize, self.boardsize))
+        self.load_board(surface, themeMgr)
+        pygame.draw.rect(surface, themeMgr.getFontColor(), pygame.Rect(self.boardX, self.boardY, self.boardsize, self.boardsize))
         for x in range(self.size):
             for y in range(self.size):
                 self.button(x,y,surface)
@@ -164,7 +164,7 @@ class Board:
     def button(self,x,y,surface):
         pygame.draw.rect(surface, self.color, pygame.Rect(self.boardX + 5 + (x * 35), self.boardY + 5 + (y * 35), 30, 30))
 
-    def load_board(self, surface):
+    def load_board(self, surface, themeMgr):
         posX = 0 # Left Side
         for x in self.solNumsX:
             count = 0 # For numbers side to side
@@ -173,11 +173,11 @@ class Board:
                 # Render numbers >= 10 in smaller font and fix spacing
                 if y >= 10:
                     font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 26)
-                    text = font.render(str(y), True, (0,0,0))
+                    text = font.render(str(y), True, themeMgr.getFontColor())
                     surface.blit(text,(self.boardX - 40 - (count * 35) ,self.boardY + 10 + (posX * 35)))
                 else:
                     font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 30)
-                    text = font.render(str(y), True, (0,0,0))
+                    text = font.render(str(y), True, themeMgr.getFontColor())
                     surface.blit(text,(self.boardX - 35 - (count * 35) ,self.boardY + 5 + (posX * 35)))
 
                 count = count + 1
@@ -190,11 +190,11 @@ class Board:
                 # Render numbers >= 10 in smaller font and fix spacing
                 if y >= 10:
                     font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 26)
-                    text = font.render(str(y), True, (0,0,0))
+                    text = font.render(str(y), True, themeMgr.getFontColor())
                     surface.blit(text,(self.boardX + 5 + (posX * 35),(self.boardY - 40 - (count * 35))))
                 else:
                     font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 30)
-                    text = font.render(str(y), True, (0,0,0))
+                    text = font.render(str(y), True, themeMgr.getFontColor())
                     surface.blit(text,(self.boardX + 8 + (posX * 35),(self.boardY - 40 - (count * 35))))
 
                 count = count + 1
@@ -202,7 +202,7 @@ class Board:
 
     # Display each of the boxes, with displayed color depending on their state
     # 0 - blank - white; 1 - filled - black/grey; 2 - X - red
-    def displayBoxes(self, surface):
+    def displayBoxes(self, surface, themeMgr):
         for i in range(self.size): # each row
             for j in range(self.size): # each column
 
@@ -211,17 +211,17 @@ class Board:
                 upperLeftY = self.boardY + 5 + (i * 35)
 
                 if self.grid[i][j] == 0: # blank
-                    pygame.draw.rect(surface, (255,255,255), pygame.Rect(upperLeftX, upperLeftY, 30, 30))
+                    pygame.draw.rect(surface, themeMgr.getBgColor(), pygame.Rect(upperLeftX, upperLeftY, 30, 30))
 
                 elif self.grid[i][j] == 1: # filled
                     # White background
-                    pygame.draw.rect(surface, (255,255,255), pygame.Rect(upperLeftX, upperLeftY, 30, 30))
+                    pygame.draw.rect(surface, themeMgr.getBgColor(), pygame.Rect(upperLeftX, upperLeftY, 30, 30))
                     # Black square for the fill
-                    pygame.draw.rect(surface, (0,0,0), pygame.Rect(upperLeftX + 3, upperLeftY + 3, 24, 24))
+                    pygame.draw.rect(surface, themeMgr.getFontColor(), pygame.Rect(upperLeftX + 3, upperLeftY + 3, 24, 24))
 
                 else: # self.grid[i][j] == 2, X
                     # White background
-                    pygame.draw.rect(surface, (255,255,255), pygame.Rect(upperLeftX, upperLeftY, 30, 30))
+                    pygame.draw.rect(surface, themeMgr.getBgColor(), pygame.Rect(upperLeftX, upperLeftY, 30, 30))
                     # Two red lines to make the X:
                     pygame.draw.line(surface, (255,0,0), (upperLeftX + 5, upperLeftY + 3), (upperLeftX + 23, upperLeftY + 26), 6)
                     pygame.draw.line(surface, (255,0,0), (upperLeftX + 23, upperLeftY + 3), (upperLeftX + 5, upperLeftY + 26), 6)

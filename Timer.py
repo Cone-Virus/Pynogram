@@ -28,7 +28,7 @@ class Timer():
     def resetTimer(self): # start counting from 0
         self.refTime = pygame.time.get_ticks() # updates the reference time (new starting point)
 
-    def displayTime(self, surface): # display the time on the screen
+    def displayTime(self, surface, themeMgr): # display the time on the screen
         # Only update time if timer is running
         if self.timerRunning:
             # Determine amount of time passed since refTime was set up
@@ -37,13 +37,13 @@ class Timer():
         self.numMinutes = self.numSeconds // 60 # s -> min
         self.numSeconds = self.numSeconds - (self.numMinutes * 60) # remove the time accounted for in numMinutes
 
-        # Black box for border around timer
-        pygame.draw.rect(surface, (0,0,0), pygame.Rect(745, 45, 110, 55))
-        # White background for timer
-        pygame.draw.rect(surface, (255,255,255), pygame.Rect(750, 50, 100, 45))
+        # Border around timer
+        pygame.draw.rect(surface, themeMgr.getFontColor(), pygame.Rect(745, 45, 110, 55))
+        # Background for timer
+        pygame.draw.rect(surface, themeMgr.getBgColor(), pygame.Rect(750, 50, 100, 45))
 
         # Display timer text (minutes and seconds)
         self.timerText = "{0:02}:{1:02}".format(self.numMinutes, self.numSeconds)
         font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 30)
-        text = font.render(self.timerText, True, (0,0,0))
+        text = font.render(self.timerText, True, themeMgr.getFontColor())
         surface.blit(text, [760, 60])

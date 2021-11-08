@@ -13,6 +13,7 @@ import MuteMusicButton
 import Tutorial
 import LevelSelect
 import GamePause
+import ThemeMgr
 
 # Functions from other files
 import load_image
@@ -20,11 +21,12 @@ import blink_anim
 import get_path
 
 def main():
+    themeMgr = ThemeMgr.ThemeMgr(False) # FIXME - starts in dark mode
     clock = pygame.time.Clock()
     screen = pygame.init()
     surface = pygame.display.set_mode((900,900))
     pygame.display.set_caption("Pynogram")
-    surface.fill((255,255,255))
+    surface.fill(themeMgr.getBgColor())
     level = LevelSelect.LevelSelect()
     timer = Timer.Timer()
     board = Board.Board()
@@ -49,7 +51,7 @@ def main():
     # Tutorial Button
     tut = Button.Button(250,400, "images/Tutorial-Button.png")
 
-    # Pause Button 
+    # Pause Button
     pauseB = Button.Button(10,10, "images/Pause-Button.png")
 
     # Popup buttons
@@ -79,14 +81,15 @@ def main():
     while True:
         clock.tick(60) # 60 fps
 
+        surface.fill(themeMgr.getBgColor()) # background, needed for all pages
+
         if page == "Main Menu":
-            surface.fill((255,255,255)) # white background
             muteMusicButton.draw(surface) # mute button
             tut.draw(surface) # Tutorial Button
 
             # Title text
             font = pygame.font.Font(get_path.get_path('assets/font/freesansbold.ttf'), 70)
-            text = font.render("Pynogram", True, (0,0,0))
+            text = font.render("Pynogram", True, themeMgr.getFontColor())
             surface.blit(text, [280, 40])
 
             # buttons
@@ -95,30 +98,29 @@ def main():
 
         elif page == "Difficulty Selection":
             if level.difficulty == "":
-                level.Difficulty(surface,muteMusicButton)
+                level.Difficulty(surface,muteMusicButton,themeMgr)
             if level.difficulty != "":
-                level.lvlSelect(surface,muteMusicButton)
+                level.lvlSelect(surface,muteMusicButton,themeMgr)
 
         elif page == "Tutorial":
-            page = tutorial.tutScreen(surface,muteMusicButton)
+            page = tutorial.tutScreen(surface,muteMusicButton,themeMgr)
 
 
         elif page == "Pause":
-            page = pause.pauseScreen(surface,muteMusicButton)
+            page = pause.pauseScreen(surface,muteMusicButton,themeMgr)
 
         elif page == "Board":
             # All the code to display things on the screen goes here
-            surface.fill((255,255,255)) # white background
             clearButton.draw(surface) # clear button
             checkPuzzleButton.draw(surface) # check puzzle button
             muteMusicButton.draw(surface) # mute button
-            timer.displayTime(surface) # show timer
+            timer.displayTime(surface, themeMgr) # show timer
             pauseB.draw(surface) # Pause button
 
             #FIXME - comments from Pedro on gameState
             if gameState == 0:
-                board.displayBoard(surface) # grid and numbers
-                board.displayBoxes(surface) # boxes in the grid
+                board.displayBoard(surface,themeMgr) # grid and numbers
+                board.displayBoxes(surface, themeMgr) # boxes in the grid
             elif gameState == 1:
                 if solCorrect:
                     puzzleComplete.draw(surface)
@@ -129,7 +131,7 @@ def main():
                     showSolution.draw(surface)
 
             if blinkSoln:
-                blink_anim.blink_anim(timer, board, surface) # very slow blinking animation to show solution briefly
+                blink_anim.blink_anim(timer, board, surface, themeMgr) # very slow blinking animation to show solution briefly
                 blinkSoln = False # done - prevent continuous blinking
 
         if level.solnName != "" and notNew:
@@ -140,7 +142,7 @@ def main():
             timer.setRunning(True)
 
         pygame.display.update() # Update the display only one per loop (otherwise get flickering)
-        
+
         if page == "Pause Main":
             page = "Main Menu"
             gameState = 0

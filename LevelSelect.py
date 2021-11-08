@@ -25,11 +25,10 @@ class LevelSelect():
     def genSol(self): # Generate Solution
         self.solnName = "levels/" + self.difficulty + "-" + self.level + ".txt"
 
-    def Difficulty(self,surface,mute): # From main to difficulty selection
-        surface.fill((255,255,255)) # white background
+    def Difficulty(self,surface,mute,themeMgr): # From main to difficulty selection
         mute.draw(surface) # mute button
         font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 60) # Title
-        text = font.render("Select Puzzle Size", True, (0,0,0))
+        text = font.render("Select Puzzle Size", True, themeMgr.getFontColor())
         surface.blit(text, [195, 60])
 
         # Draw Difficulty Buttons
@@ -51,14 +50,13 @@ class LevelSelect():
                     elif self.size15.rect.collidepoint(x, y): # Selection of levels
                         self.difficulty = "15" # Select level 15
 
-    def lvlSelect(self,surface,mute): # From difficulty to selection
+    def lvlSelect(self,surface,mute,themeMgr): # From difficulty to selection
         # All the code to display things on the screen goes here
-        surface.fill((255,255,255)) # white background
         mute.draw(surface) # mute button
 
         # Header text
         font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 60)
-        text = font.render("Select a Puzzle", True, (0,0,0))
+        text = font.render("Select a Puzzle", True, themeMgr.getFontColor())
         surface.blit(text, [250, 60])
 
         # Draw Level buttons
@@ -94,4 +92,3 @@ class LevelSelect():
                     elif self.level6.rect.collidepoint(x, y):
                         self.level = "6"
                         self.genSol()
-

@@ -7,15 +7,13 @@ class Tutorial():
         # Back Button
         self.back_button = Button.Button(750, 10, "images/Back-Button.png")
 
-        # Title Header
-        font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 60) # Title
-        self.text = font.render("How To Play", True, (0,0,0))
-
         # Tutorial Image
         self.tut = Button.Button(140,200, "images/Tutorial.png") # Loading in as button because im lazy
 
-    def tutScreen(self,surface,mute):
-        surface.fill((255,255,255))
+    def tutScreen(self,surface,mute,themeMgr):
+        # Title Header
+        font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 60) # Title
+        self.text = font.render("How To Play", True, themeMgr.getFontColor())
         surface.blit(self.text, [300,60])
 
         # Draw Button
