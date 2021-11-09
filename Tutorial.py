@@ -17,21 +17,25 @@ class Tutorial():
         surface.blit(self.text, [300,60])
 
         # Draw Button
-        self.back_button.draw(surface)
+        self.back_button.draw(surface,themeMgr)
 
         # Draw mute button
-        mute.draw(surface)
+        mute.draw(surface,themeMgr)
 
         # Tutorial Image
-        self.tut.draw(surface)
+        self.tut.draw(surface,themeMgr)
 
         # Interaction loop
         for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                pygame.quit()
+                exit() # Prevents error message when quitting
+                
             if e.type == pygame.MOUSEBUTTONDOWN:
                 x,y = pygame.mouse.get_pos()
                 if e.button == 1:
                     if mute.rect.collidepoint(x, y): # left click on mute music button
-                        mute.toggleMusic() # mute/unmute music
+                        mute.toggleMusic(themeMgr) # mute/unmute music
                     if self.back_button.rect.collidepoint(x, y): # left click on back button
                         return "Main Menu" # return main menu state
         return "Tutorial"

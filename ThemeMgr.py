@@ -29,3 +29,12 @@ class ThemeMgr:
             return (255,255,255) # white text
         else:
             return (0,0,0) # black text
+
+    # Get the filename for images
+    # Dark mode: return "images/" + "dark_" + default filename
+    # Light mode: return "images/" + default filename
+    def getFileName(self,defFilename):
+        if self.darkMode:
+            return "images/" + "dark_"+ defFilename
+        else:
+            return "images/" + defFilename

@@ -21,7 +21,7 @@ import blink_anim
 import get_path
 
 def main():
-    themeMgr = ThemeMgr.ThemeMgr(False) # FIXME - starts in dark mode
+    themeMgr = ThemeMgr.ThemeMgr(True) # FIXME - starts in dark mode
     clock = pygame.time.Clock()
     screen = pygame.init()
     surface = pygame.display.set_mode((900,900))
@@ -45,14 +45,17 @@ def main():
 
     # Set up clear button, check button, mute music button
     clearButton = ClearButton.ClearButton(725, 120, "images/clear.bmp")
-    checkPuzzleButton = CheckPuzzleButton.CheckPuzzleButton(325, 800, "images/check.bmp")
-    muteMusicButton = MuteMusicButton.MuteMusicButton(790,800,"images/music-on.bmp")
+    checkPuzzleButton = CheckPuzzleButton.CheckPuzzleButton(325, 800, "images/check.png")
+    muteMusicButton = MuteMusicButton.MuteMusicButton(790,800,"images/music_on.png")
 
     # Tutorial Button
     tut = Button.Button(250,400, "images/Tutorial-Button.png")
 
     # Pause Button
     pauseB = Button.Button(10,10, "images/Pause-Button.png")
+
+    # Theme Toggle button
+    themeToggle = Button.Button(35,780,"images/theme_toggle.png")
 
     # Popup buttons
     puzzleComplete = Button.Button(50,115, "images/puzzleComplete.png")
@@ -84,8 +87,9 @@ def main():
         surface.fill(themeMgr.getBgColor()) # background, needed for all pages
 
         if page == "Main Menu":
-            muteMusicButton.draw(surface) # mute button
-            tut.draw(surface) # Tutorial Button
+            muteMusicButton.draw(surface,themeMgr) # mute button
+            tut.draw(surface,themeMgr) # Tutorial Button
+            themeToggle.draw(surface,themeMgr) # Theme Toggle Button
 
             # Title text
             font = pygame.font.Font(get_path.get_path('assets/font/freesansbold.ttf'), 70)
@@ -93,8 +97,8 @@ def main():
             surface.blit(text, [280, 40])
 
             # buttons
-            startGame.draw(surface)
-            quitGame.draw(surface)
+            startGame.draw(surface,themeMgr)
+            quitGame.draw(surface,themeMgr)
 
         elif page == "Difficulty Selection":
             if level.difficulty == "":
@@ -107,15 +111,16 @@ def main():
 
 
         elif page == "Pause":
-            page = pause.pauseScreen(surface,muteMusicButton,themeMgr)
+            page = pause.pauseScreen(surface,muteMusicButton,themeToggle,themeMgr)
+            themeToggle.draw(surface,themeMgr) # Theme Toggle Button
 
         elif page == "Board":
             # All the code to display things on the screen goes here
-            clearButton.draw(surface) # clear button
-            checkPuzzleButton.draw(surface) # check puzzle button
-            muteMusicButton.draw(surface) # mute button
+            clearButton.draw(surface,themeMgr) # clear button
+            checkPuzzleButton.draw(surface,themeMgr) # check puzzle button
+            muteMusicButton.draw(surface,themeMgr) # mute button
             timer.displayTime(surface, themeMgr) # show timer
-            pauseB.draw(surface) # Pause button
+            pauseB.draw(surface,themeMgr) # Pause button
 
             #FIXME - comments from Pedro on gameState
             if gameState == 0:
@@ -123,12 +128,12 @@ def main():
                 board.displayBoxes(surface, themeMgr) # boxes in the grid
             elif gameState == 1:
                 if solCorrect:
-                    puzzleComplete.draw(surface)
-                    pcMainMenu.draw(surface)
+                    puzzleComplete.draw(surface,themeMgr)
+                    pcMainMenu.draw(surface,themeMgr)
                 else:
-                    puzzleIncorrect.draw(surface)
-                    tryAgain.draw(surface)
-                    showSolution.draw(surface)
+                    puzzleIncorrect.draw(surface,themeMgr)
+                    tryAgain.draw(surface,themeMgr)
+                    showSolution.draw(surface,themeMgr)
 
             if blinkSoln:
                 blink_anim.blink_anim(timer, board, surface, themeMgr) # very slow blinking animation to show solution briefly
@@ -164,7 +169,7 @@ def main():
                 x,y = pygame.mouse.get_pos()
 
                 if e.button == 1 and muteMusicButton.rect.collidepoint(x, y): # left click on mute music button
-                    muteMusicButton.toggleMusic() # mute/unmute music
+                    muteMusicButton.toggleMusic(themeMgr) # mute/unmute music
 
                 elif e.button == 1 and page == "Main Menu" and quitGame.rect.collidepoint(x, y): # quit game button
                     pygame.quit()
@@ -172,6 +177,9 @@ def main():
 
                 elif e.button == 1 and page == "Main Menu" and startGame.rect.collidepoint(x, y): # start game button
                     page = "Difficulty Selection"
+
+                elif e.button == 1 and page == "Main Menu" and themeToggle.rect.collidepoint(x, y): # theme toggle button
+                    themeMgr.toggleDarkMode()
 
                 elif e.button == 1 and page == "Main Menu" and tut.rect.collidepoint(x, y):
                     page = "Tutorial"

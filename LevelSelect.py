@@ -26,23 +26,27 @@ class LevelSelect():
         self.solnName = "levels/" + self.difficulty + "-" + self.level + ".txt"
 
     def Difficulty(self,surface,mute,themeMgr): # From main to difficulty selection
-        mute.draw(surface) # mute button
+        mute.draw(surface,themeMgr) # mute button
         font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 60) # Title
         text = font.render("Select Puzzle Size", True, themeMgr.getFontColor())
         surface.blit(text, [195, 60])
 
         # Draw Difficulty Buttons
-        self.size5.draw(surface)
-        self.size10.draw(surface)
-        self.size15.draw(surface)
+        self.size5.draw(surface,themeMgr)
+        self.size10.draw(surface,themeMgr)
+        self.size15.draw(surface,themeMgr)
 
         # Interaction loop
         for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                pygame.quit()
+                exit() # Prevents error message when quitting
+
             if e.type == pygame.MOUSEBUTTONDOWN:
                 x,y = pygame.mouse.get_pos()
                 if e.button == 1:
                     if mute.rect.collidepoint(x, y): # left click on mute music button
-                        mute.toggleMusic() # mute/unmute music
+                        mute.toggleMusic(themeMgr) # mute/unmute music
                     elif self.size5.rect.collidepoint(x, y): # Selection of levels
                         self.difficulty = "5" # Select level 5
                     elif self.size10.rect.collidepoint(x, y): # Selection of levels
@@ -52,7 +56,7 @@ class LevelSelect():
 
     def lvlSelect(self,surface,mute,themeMgr): # From difficulty to selection
         # All the code to display things on the screen goes here
-        mute.draw(surface) # mute button
+        mute.draw(surface,themeMgr) # mute button
 
         # Header text
         font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 60)
@@ -60,15 +64,19 @@ class LevelSelect():
         surface.blit(text, [250, 60])
 
         # Draw Level buttons
-        self.level1.draw(surface)
-        self.level2.draw(surface)
-        self.level3.draw(surface)
-        self.level4.draw(surface)
-        self.level5.draw(surface)
-        self.level6.draw(surface)
+        self.level1.draw(surface,themeMgr)
+        self.level2.draw(surface,themeMgr)
+        self.level3.draw(surface,themeMgr)
+        self.level4.draw(surface,themeMgr)
+        self.level5.draw(surface,themeMgr)
+        self.level6.draw(surface,themeMgr)
 
         # Interaction loop
         for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                pygame.quit()
+                exit() # Prevents error message when quitting
+                
             if e.type == pygame.MOUSEBUTTONDOWN:
                 x,y = pygame.mouse.get_pos()
                 if e.button == 1:
