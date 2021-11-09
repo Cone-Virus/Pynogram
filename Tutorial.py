@@ -5,7 +5,7 @@ import get_path
 class Tutorial():
     def __init__(self):
         # Back Button
-        self.back_button = Button.Button(750, 10, "images/Back-Button.png")
+        self.back_button = Button.Button(790, 20, "images/Back-Button.png")
 
         # Tutorial Image
         self.tut = Button.Button(140,200, "images/Tutorial.png") # Loading in as button because im lazy
@@ -30,7 +30,7 @@ class Tutorial():
             if e.type == pygame.QUIT:
                 pygame.quit()
                 exit() # Prevents error message when quitting
-                
+
             if e.type == pygame.MOUSEBUTTONDOWN:
                 x,y = pygame.mouse.get_pos()
                 if e.button == 1:

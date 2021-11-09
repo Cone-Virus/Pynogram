@@ -21,7 +21,7 @@ import blink_anim
 import get_path
 
 def main():
-    themeMgr = ThemeMgr.ThemeMgr(True) # FIXME - starts in dark mode
+    themeMgr = ThemeMgr.ThemeMgr(False) # starts in light mode
     clock = pygame.time.Clock()
     screen = pygame.init()
     surface = pygame.display.set_mode((900,900))
@@ -44,15 +44,15 @@ def main():
     #Used when puzzle incorrect, prevents game from continuing until user selects to try again or give up
 
     # Set up clear button, check button, mute music button
-    clearButton = ClearButton.ClearButton(725, 120, "images/clear.bmp")
+    clearButton = ClearButton.ClearButton(725, 120, "images/clear.png")
     checkPuzzleButton = CheckPuzzleButton.CheckPuzzleButton(325, 800, "images/check.png")
     muteMusicButton = MuteMusicButton.MuteMusicButton(790,800,"images/music_on.png")
 
     # Tutorial Button
-    tut = Button.Button(250,400, "images/Tutorial-Button.png")
+    tut = Button.Button(250,410, "images/Tutorial-Button.png")
 
     # Pause Button
-    pauseB = Button.Button(10,10, "images/Pause-Button.png")
+    pauseB = Button.Button(30,30, "images/Pause-Button.png")
 
     # Theme Toggle button
     themeToggle = Button.Button(35,780,"images/theme_toggle.png")
@@ -65,8 +65,8 @@ def main():
     showSolution = Button.Button(325, 510, "images/showSolution.png")
 
     # Main menu buttons
-    quitGame = Button.Button(280, 550, "images/quit.png")
-    startGame = Button.Button (185, 200, "images/startGame.png")
+    quitGame = Button.Button(300, 590, "images/quit.png")
+    startGame = Button.Button (170, 200, "images/startGame.png")
 
     blinkSoln = False # animation when showing solution
 

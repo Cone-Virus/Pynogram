@@ -12,12 +12,12 @@ class LevelSelect():
 
         # Level selection buttons
         self.level = ""
-        self.level1 = Button.Button(125, 225, "images/level1.png")
-        self.level2 = Button.Button(375, 225, "images/level2.png")
-        self.level3 = Button.Button(625, 225, "images/level3.png")
-        self.level4 = Button.Button(125, 500, "images/level4.png")
-        self.level5 = Button.Button(375, 500, "images/level5.png")
-        self.level6 = Button.Button(625, 500, "images/level6.png")
+        self.level1 = Button.Button(150, 225, "images/level1.png")
+        self.level2 = Button.Button(400, 225, "images/level2.png")
+        self.level3 = Button.Button(650, 225, "images/level3.png")
+        self.level4 = Button.Button(150, 500, "images/level4.png")
+        self.level5 = Button.Button(400, 500, "images/level5.png")
+        self.level6 = Button.Button(650, 500, "images/level6.png")
 
         # Solution file name
         self.solnName = ""
@@ -76,12 +76,12 @@ class LevelSelect():
             if e.type == pygame.QUIT:
                 pygame.quit()
                 exit() # Prevents error message when quitting
-                
+
             if e.type == pygame.MOUSEBUTTONDOWN:
                 x,y = pygame.mouse.get_pos()
                 if e.button == 1:
                     if mute.rect.collidepoint(x, y): # left click on mute music button
-                        mute.toggleMusic() # mute/unmute music
+                        mute.toggleMusic(themeMgr) # mute/unmute music
                     elif self.level1.rect.collidepoint(x, y):
                         self.level = "1"
                         self.genSol()

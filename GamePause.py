@@ -5,9 +5,9 @@ import get_path
 class Pause():
     def __init__(self):
         # Buttons
-        self.main_button = Button.Button(275,250, "images/pause-main.png")
-        self.quit_button = Button.Button(275,450, "images/pause-quit.png")
-        self.resume = Button.Button(10,10, "images/resume.png")
+        self.main_button = Button.Button(290,250, "images/pause-main.png")
+        self.quit_button = Button.Button(290,450, "images/pause-quit.png")
+        self.resume = Button.Button(30,29, "images/resume.png")
 
     def pauseScreen(self,surface,mute,themeToggle,themeMgr):
         # Title Header
