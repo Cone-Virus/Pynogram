@@ -136,8 +136,7 @@ def main():
                     showSolution.draw(surface,themeMgr)
 
             if blinkSoln:
-                blink_anim.blink_anim(timer, board, surface, themeMgr) # very slow blinking animation to show solution briefly
-                blinkSoln = False # done - prevent continuous blinking
+                blinkSoln = blink_anim.blink_anim(timer, board, surface, themeMgr, startTime) # very slow blinking animation to show solution briefly
 
         if level.solnName != "" and notNew:
             page = "Board"
@@ -189,11 +188,11 @@ def main():
                     page = "Pause"
 
                 elif page == "Board" and gameState == 0:
-                    if e.button == 1 and clearButton.rect.collidepoint(x, y) and canEditGrid: # left click on clear button
+                    if e.button == 1 and clearButton.rect.collidepoint(x, y) and canEditGrid and (not blinkSoln): # left click on clear button
                         board.clearGrid() # clear grid
                         timer.resetTimer()
 
-                    if e.button == 1 and checkPuzzleButton.rect.collidepoint(x, y) and canEditGrid: # left click on check button
+                    if e.button == 1 and checkPuzzleButton.rect.collidepoint(x, y) and canEditGrid and (not blinkSoln): # left click on check button
                         # Check if user completed puzzle successfully
                         # If they did or they choose to see solution, prevent them from editing the grid
                         canEditGrid, solCorrect = checkPuzzleButton.checkPuzzle(board)
@@ -213,6 +212,7 @@ def main():
 
                         if e.button == 1 and showSolution.rect.collidepoint(x, y):
                             board.showSolution()
+                            startTime = pygame.time.get_ticks() #keep track of time for blink animation
                             blinkSoln = True
                             gameState = 0
 
