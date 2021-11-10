@@ -44,12 +44,12 @@ class Timer():
         self.numSeconds = self.numSeconds - (self.numMinutes * 60) # remove the time accounted for in numMinutes
 
         # Border around timer
-        pygame.draw.rect(surface, themeMgr.getFontColor(), pygame.Rect(745, 45, 110, 55))
+        pygame.draw.rect(surface, themeMgr.getFontColor(), pygame.Rect(725, 25, 160, 75))
         # Background for timer
-        pygame.draw.rect(surface, themeMgr.getBgColor(), pygame.Rect(750, 50, 100, 45))
+        pygame.draw.rect(surface, themeMgr.getBgColor(), pygame.Rect(730, 30, 150, 65))
 
         # Display timer text (minutes and seconds)
         self.timerText = "{0:02}:{1:02}".format(self.numMinutes, self.numSeconds)
-        font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 30)
+        font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 50)
         text = font.render(self.timerText, True, themeMgr.getFontColor())
-        surface.blit(text, [760, 60])
+        surface.blit(text, [740, 30])
