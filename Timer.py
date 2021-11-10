@@ -17,6 +17,7 @@ class Timer():
         self.currTime = pygame.time.get_ticks() - self.refTime # get the relative time
         self.numSeconds = 0
         self.numMinutes = 0
+        self.refNumSeconds = 0 # used for keeping track of timer value when paused
         self.timerText = ""
 
     def isRunning(self): # true if timer running, false otherwise (getter)
@@ -24,8 +25,13 @@ class Timer():
 
     def setRunning(self, status): # set timerRunning to status (setter)
         self.timerRunning = status
+        if status == False: # pause timer
+            self.refNumSeconds = (self.numMinutes * 60) + self.numSeconds # store current value in seconds
+        else: # start timer
+            self.refTime = pygame.time.get_ticks() - (1000 * self.refNumSeconds) # restore the value
 
     def resetTimer(self): # start counting from 0
+        self.refNumSeconds = 0
         self.refTime = pygame.time.get_ticks() # updates the reference time (new starting point)
 
     def displayTime(self, surface, themeMgr): # display the time on the screen
