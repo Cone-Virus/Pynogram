@@ -202,7 +202,7 @@ def main():
                             timer.setRunning(False) # stop the timer
                             canEditGrid = False
 
-                    if (e.button == 1 or e.button == 3) and canEditGrid: # click on box in grid
+                    if (e.button == 1 or e.button == 3) and canEditGrid and (not blinkSoln): # click on box in grid
                         board.clickBox(x,y,e.button)
 
                 elif page == "Board" and gameState == 1:
