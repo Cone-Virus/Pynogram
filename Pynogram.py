@@ -59,10 +59,10 @@ def main():
 
     # Popup buttons
     puzzleComplete = Button.Button(50,115, "images/puzzleComplete.png")
-    pcMainMenu = Button.Button(325,495, "images/mainmenu.png")
+    pcMainMenu = Button.Button(275,495, "images/mainmenu.png")
     puzzleIncorrect = Button.Button(50,115, "images/incorrect.png")
-    tryAgain = Button.Button(325,420, "images/tryAgain.png")
-    showSolution = Button.Button(325, 510, "images/showSolution.png")
+    tryAgain = Button.Button(300,420, "images/tryAgain.png")
+    showSolution = Button.Button(300, 510, "images/showSolution.png")
 
     # Main menu buttons
     quitGame = Button.Button(300, 590, "images/quit.png")
