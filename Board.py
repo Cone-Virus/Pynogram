@@ -168,17 +168,22 @@ class Board:
         posX = 0 # Left Side
         for x in self.solNumsX:
             count = 0 # For numbers side to side
+            # Reduce spacing if too many numbers (otherwise goes off screen)
+            if len(x) > 5:
+                spacing = 5
+            else:
+                spacing = 0
             x = reversed(x)
             for y in x:
                 # Render numbers >= 10 in smaller font and fix spacing
                 if y >= 10:
                     font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 26)
                     text = font.render(str(y), True, themeMgr.getFontColor())
-                    surface.blit(text,(self.boardX - 40 - (count * 35) ,self.boardY + 10 + (posX * 35)))
+                    surface.blit(text,(self.boardX - 35 - (count * (35-spacing)) ,self.boardY + 10 + (posX * 35)))
                 else:
                     font = pygame.font.Font(get_path.get_path("assets/font/freesansbold.ttf"), 30)
                     text = font.render(str(y), True, themeMgr.getFontColor())
-                    surface.blit(text,(self.boardX - 35 - (count * 35) ,self.boardY + 5 + (posX * 35)))
+                    surface.blit(text,(self.boardX - 30 - (count * (35-spacing)) ,self.boardY + 5 + (posX * 35)))
 
                 count = count + 1
             posX = posX + 1
