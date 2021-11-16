@@ -233,21 +233,17 @@ class Board:
 
 
     def convert_space(self,x,y): # Function responsible for converting X,Y mouse coordinates into array numbers
-        new_x = math.floor((x - self.boardX + 5) / 35)
-        new_y = math.floor((y - self.boardY + 5) / 35)
+        new_x = math.floor((x - self.boardX - 5) / 35)
+        new_y = math.floor((y - self.boardY - 5) / 35)
         if new_x < 0:
             new_x = 0
         if new_y < 0:
             new_y = 0
-        if new_x >= self.size:
-            new_x = self.size - 1
-        if new_y >= self.size:
-            new_y = self.size - 1
         return new_x, new_y
 
     # Handles changes in box states when clicked on
     def clickBox(self,x,y,selection):
-        if x <= self.boardsize + self.boardX + 5 and y <= self.boardsize + self.boardY + 5 and x >= self.boardX and y >= self.boardY:
+        if x <= self.boardsize + self.boardX and y <= self.boardsize + self.boardY and x >= self.boardX and y >= self.boardY:
             col,row = self.convert_space(x,y) # Get the row and column of the box to toggle
             if selection == 1: # left click - toggle fill
                 self.toggleFill(row,col)
